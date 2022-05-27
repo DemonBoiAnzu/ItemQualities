@@ -1,0 +1,12 @@
+name: ItemQualities
+version: '${project.version}'
+main: com.abraxas.itemqualities.ItemQualities
+api-version: 1.18
+prefix: ItemQualities
+load: STARTUP
+authors: [ Steel_Abraxas ]
+description: A simple plugin that adds Qualities to Items. Customizable.
+permissions:
+  itemqualities.admin:
+    default: op
+    description: Allows use of all admin commands.

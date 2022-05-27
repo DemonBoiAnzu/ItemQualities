@@ -1,0 +1,6 @@
+{
+  "debugMode": true,
+  "prefix": "&bItemQualities &7» ",
+  "itemQualityDisplayFormat": "{QUALITY} &r{ITEM}",
+  "exampleItemQualitiesEnabled": true
+}
