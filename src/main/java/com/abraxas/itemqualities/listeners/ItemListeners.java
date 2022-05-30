@@ -4,28 +4,34 @@ import com.abraxas.itemqualities.Config;
 import com.abraxas.itemqualities.ItemQualities;
 import com.abraxas.itemqualities.QualitiesManager;
 import com.abraxas.itemqualities.api.DurabilityManager;
+import com.abraxas.itemqualities.api.Keys;
 import com.abraxas.itemqualities.api.quality.ItemQuality;
 import com.abraxas.itemqualities.utils.Utils;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
-import java.util.Map;
+import static com.abraxas.itemqualities.utils.Utils.log;
 
 public class ItemListeners implements Listener {
+    // TODO: Make no drops/double drops function for weapons/tools
     ItemQualities main = ItemQualities.getInstance();
 
     Config config = main.getConfiguration();
@@ -167,5 +173,36 @@ public class ItemListeners implements Listener {
         ItemQuality itemsQuality = QualitiesManager.getQuality(item);
         if (itemsQuality == null) return;
         event.setDropItems(itemsQuality.noDropChance <= 0 || !Utils.chanceOf(itemsQuality.noDropChance));
+    }
+
+    @EventHandler
+    public void onProjectileLaunch(ProjectileLaunchEvent event) {
+        var proj = event.getEntity();
+
+        if (!(proj.getShooter() instanceof LivingEntity entity)) return;
+        var equipment = entity.getEquipment();
+
+        if (equipment == null) return;
+        var item = equipment.getItemInMainHand();
+        var itemMeta = item.getItemMeta();
+
+        if (itemMeta == null || !itemMeta.hasAttributeModifiers()) return;
+
+        if (itemMeta.getAttributeModifiers(Attribute.GENERIC_ATTACK_DAMAGE) == null) return;
+        var atkDmgMod = itemMeta.getAttributeModifiers(Attribute.GENERIC_ATTACK_DAMAGE).stream().findFirst();
+        if (atkDmgMod.isPresent()) {
+            var value = atkDmgMod.get().getAmount();
+            proj.getPersistentDataContainer().set(Keys.ITEM_PROJECTILE_DAMAGE_KEY, PersistentDataType.DOUBLE, value);
+            log("Setting damage from ItemQuality to projectile: %s".formatted(value));
+        }
+    }
+
+    @EventHandler
+    public void onEntityHitByProjectile(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Projectile proj)) return;
+        log("Initial damage: %s".formatted(event.getDamage()));
+        var value = proj.getPersistentDataContainer().getOrDefault(Keys.ITEM_PROJECTILE_DAMAGE_KEY, PersistentDataType.DOUBLE, 0d);
+        event.setDamage(event.getDamage() + value);
+        log("New damage: %s".formatted(event.getDamage()));
     }
 }

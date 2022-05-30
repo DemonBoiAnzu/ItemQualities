@@ -15,12 +15,15 @@ public class ItemQuality {
     public Map<Attribute, AttributeModifier> modifiers;
 
     public int addToItemChance;
+
     public int itemMaxDurabilityAddition;
     public int noDurabilityLossChance;
     public int extraDurabilityLoss;
     public int extraDurabilityLossChance;
+
     public int noDropChance;
     public int doubleDropsChance;
+
     public int tier;
 
     public ItemQuality(NamespacedKey key, String display, int addToItemChance, int tier){

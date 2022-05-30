@@ -39,15 +39,29 @@ public class Utils {
     }
 
     public static boolean isMiningTool(ItemStack itemStack){
-        return itemStack.getType().toString().contains("PICKAXE") || itemStack.getType().toString().contains("SHOVEL") || itemStack.getType().toString().contains("AXE");
+        return itemStack.getType().toString().contains("PICKAXE") ||
+                itemStack.getType().toString().contains("SHOVEL") ||
+                itemStack.getType().toString().contains("HOE") ||
+                itemStack.getType().toString().contains("AXE");
     }
 
-    public static boolean isArmor(ItemStack itemStack){
+    public static boolean isArmor(ItemStack itemStack) {
         return itemStack.getType().toString().contains("HELMET") ||
                 itemStack.getType().toString().contains("CHESTPLATE") ||
                 itemStack.getType().toString().contains("TUNIC") ||
+                itemStack.getType().toString().contains("ELYTRA") ||
                 itemStack.getType().toString().contains("LEGGINGS") ||
                 itemStack.getType().toString().contains("BOOTS");
+    }
+
+    public static boolean isMeleeWeapon(ItemStack itemStack) {
+        return itemStack.getType().toString().contains("SWORD") ||
+                itemStack.getType().toString().contains("_AXE");
+    }
+
+    public static boolean isProjectileLauncher(ItemStack itemStack) {
+        return itemStack.getType().toString().contains("BOW") ||
+                itemStack.getType().toString().contains("TRIDENT");
     }
 
     public static Random getRandom() {

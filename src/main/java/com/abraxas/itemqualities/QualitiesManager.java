@@ -9,7 +9,6 @@ import com.abraxas.itemqualities.api.quality.ItemQualityBuilder;
 import com.abraxas.itemqualities.utils.Utils;
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -52,6 +51,10 @@ public class QualitiesManager {
                         Attribute.GENERIC_ARMOR_TOUGHNESS.name(),
                         1,
                         AttributeModifier.Operation.ADD_NUMBER))
+                .withAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, new AttributeModifier(UUID.randomUUID(),
+                        Attribute.GENERIC_ARMOR_TOUGHNESS.name(),
+                        0.1,
+                        AttributeModifier.Operation.ADD_NUMBER))
                 .build());
         add(new ItemQualityBuilder(new NamespacedKey(main,"supreme_godlike"), "&eSupreme Godlike", 1,11)
                 .withNoDurabilityLossChance(95)
@@ -71,6 +74,10 @@ public class QualitiesManager {
                         Attribute.GENERIC_ARMOR_TOUGHNESS.name(),
                         2,
                         AttributeModifier.Operation.ADD_NUMBER))
+                .withAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, new AttributeModifier(UUID.randomUUID(),
+                        Attribute.GENERIC_ARMOR_TOUGHNESS.name(),
+                        0.15,
+                        AttributeModifier.Operation.ADD_NUMBER))
                 .build());
         add(new ItemQualityBuilder(new NamespacedKey(main,"horrible"), "&cHorrible",60,0)
                 .withNoDropChance(60)
@@ -89,6 +96,10 @@ public class QualitiesManager {
                 .withAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, new AttributeModifier(UUID.randomUUID(),
                         Attribute.GENERIC_ARMOR_TOUGHNESS.name(),
                         -2,
+                        AttributeModifier.Operation.ADD_NUMBER))
+                .withAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, new AttributeModifier(UUID.randomUUID(),
+                        Attribute.GENERIC_ARMOR_TOUGHNESS.name(),
+                        -0.1,
                         AttributeModifier.Operation.ADD_NUMBER))
                 .build());
     }};
@@ -174,7 +185,7 @@ public class QualitiesManager {
         if (itemQuality.noDurabilityLossChance > 0)
             newLore.add(colorize("&aNo Durability Loss &o(%s%% Chance)".formatted(itemQuality.noDurabilityLossChance)));
 
-        if(!Utils.isArmor(itemStack)) {
+        if (isMeleeWeapon(itemStack) || isMiningTool(itemStack) || isProjectileLauncher(itemStack)) {
             if (itemQuality.noDropChance > 0)
                 newLore.add(colorize("&cNo Drops &o(%s%% Chance)".formatted(itemQuality.noDropChance)));
             else if (itemQuality.doubleDropsChance > 0)
@@ -183,7 +194,6 @@ public class QualitiesManager {
 
         newLore.add("");
 
-        // TODO: attribute modifiers not properly adding to item along with normal defaults.
         Map<EquipmentSlot, Multimap<Attribute, AttributeModifier>> defAttributes = new HashMap<>();
         defAttributes.put(HAND,itemStack.getType().getDefaultAttributeModifiers(HAND));
         defAttributes.put(OFF_HAND,itemStack.getType().getDefaultAttributeModifiers(OFF_HAND));
@@ -193,35 +203,66 @@ public class QualitiesManager {
         defAttributes.put(FEET,itemStack.getType().getDefaultAttributeModifiers(FEET));
 
         itemQuality.modifiers.forEach((attribute, attributeModifier) -> {
-            itemMeta.removeAttributeModifier(attribute);
-            double initialValue = 0;
-            UUID initialUUID = UUID.randomUUID();
-            if(defAttributes.containsKey(attributeModifier.getSlot())) {
-                var defForSlot = defAttributes.get(attributeModifier.getSlot());
-                var curDef = defForSlot.get(attribute).stream().findFirst();
-                if (curDef.isPresent()) {
-                    var defaultMod = curDef.get();
-                    initialValue = defaultMod.getAmount();
-                    initialUUID = defaultMod.getUniqueId();
-                }
-            }
             var canAdd = true;
-            if (Utils.isArmor(itemStack)) {
-                if (attribute == Attribute.GENERIC_ATTACK_DAMAGE || attribute == Attribute.GENERIC_ATTACK_SPEED || attribute == Attribute.GENERIC_ATTACK_KNOCKBACK)
-                    canAdd = false;
-            } else if (!Utils.isArmor(itemStack)) {
-                if (attribute == Attribute.GENERIC_ARMOR || attribute == Attribute.GENERIC_ARMOR_TOUGHNESS || attribute == Attribute.GENERIC_KNOCKBACK_RESISTANCE)
-                    canAdd = false;
+
+            switch (attribute) {
+                case GENERIC_ATTACK_DAMAGE:
+                case GENERIC_ATTACK_SPEED:
+                case GENERIC_ATTACK_KNOCKBACK:
+                    if (!isMeleeWeapon(itemStack) && !isProjectileLauncher(itemStack)) canAdd = false;
+                    break;
+
+                case GENERIC_ARMOR:
+                case GENERIC_KNOCKBACK_RESISTANCE:
+                case GENERIC_ARMOR_TOUGHNESS:
+                    if (!isArmor(itemStack)) canAdd = false;
+                    break;
             }
 
             if (canAdd) {
+                double initialValue = 0;
+
+                if (defAttributes.containsKey(attributeModifier.getSlot())) {
+                    var defForSlot = defAttributes.get(attributeModifier.getSlot());
+                    var curDef = defForSlot.get(attribute).stream().findFirst();
+                    if (curDef.isPresent()) {
+                        var defaultMod = curDef.get();
+                        initialValue = defaultMod.getAmount();
+                    }
+                }
+
+                EquipmentSlot slot = attributeModifier.getSlot();
+                if (isArmor(itemStack)) {
+                    if (attribute == Attribute.GENERIC_ARMOR || attribute == Attribute.GENERIC_ARMOR_TOUGHNESS || attribute == Attribute.GENERIC_KNOCKBACK_RESISTANCE) {
+                        var itemSt = itemStack.getType().toString();
+                        if (itemSt.contains("HELMET")) slot = HEAD;
+                        else if (itemSt.contains("CHESTPLATE") || itemSt.contains("TUNIC") || itemSt.contains("ELYTRA"))
+                            slot = CHEST;
+                        else if (itemSt.contains("LEGGINGS")) slot = LEGS;
+                        else if (itemSt.contains("BOOTS")) slot = FEET;
+
+                        var defForArmorSlot = defAttributes.get(slot);
+                        for (Attribute attr : defForArmorSlot.keys()) {
+                            if (attr.equals(attribute)) {
+                                var curDefForArmorSlot = defForArmorSlot.get(attr).stream().findFirst();
+                                if (curDefForArmorSlot.isPresent()) {
+                                    var defaultMod = curDefForArmorSlot.get();
+                                    initialValue = defaultMod.getAmount();
+                                }
+                            }
+                        }
+                    }
+                }
                 var newAmount = initialValue + attributeModifier.getAmount();
-                var newMod = new AttributeModifier(initialUUID,
+
+                var newMod = new AttributeModifier(UUID.randomUUID(),
                         attributeModifier.getName(),
                         newAmount,
                         attributeModifier.getOperation(),
-                        attributeModifier.getSlot());
-                itemMeta.addAttributeModifier(attribute, newMod);
+                        slot);
+                itemMeta.removeAttributeModifier(attribute);
+                if (itemMeta.getAttributeModifiers() == null || !itemMeta.getAttributeModifiers().containsKey(attribute))
+                    itemMeta.addAttributeModifier(attribute, newMod);
                 newLore.add(colorize((attributeModifier.getAmount() > 0) ? "&a+" : "&c") + attributeModifier.getAmount() + " " + WordUtils.capitalize(attribute.name().toLowerCase().replace("_", " ").replace("generic ", "")));
             }
         });
@@ -229,8 +270,10 @@ public class QualitiesManager {
         itemMeta.setLore(newLore);
 
         defAttributes.forEach((equipmentSlot, attributeAttributeModifierMultimap) -> {
-            itemMeta.removeAttributeModifier(equipmentSlot);
-            attributeAttributeModifierMultimap.forEach(itemMeta::addAttributeModifier);
+            attributeAttributeModifierMultimap.forEach((attribute, attributeModifier) -> {
+                if (itemMeta.getAttributeModifiers() == null || !itemMeta.getAttributeModifiers().containsKey(attribute))
+                    itemMeta.addAttributeModifier(attribute, attributeModifier);
+            });
         });
 
         var maxDur = DurabilityManager.getItemMaxDurability(itemStack);
