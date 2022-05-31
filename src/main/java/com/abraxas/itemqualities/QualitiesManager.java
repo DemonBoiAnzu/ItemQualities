@@ -30,8 +30,6 @@ import static org.bukkit.inventory.EquipmentSlot.*;
 public class QualitiesManager {
     static ItemQualities main = ItemQualities.getInstance();
 
-    static Config config = main.getConfiguration();
-
     static List<ItemQuality> exampleQualities = new ArrayList<>() {{
         add(new ItemQualityBuilder(new NamespacedKey(main,"godly"), "&6Godly", 3, 10)
                 .withNoDurabilityLossChance(70)
@@ -138,6 +136,7 @@ public class QualitiesManager {
                     Registries.qualitiesRegistry.unregister(i.key);
                 });
             }
+            Registries.qualitiesRegistry.getRegistry().clear();
 
             main.getLogger().info("Loading local ItemQuality files...");
             var qualities = Files.list(Path.of("%s/qualities".formatted(main.getDataFolder()))).toList();
@@ -145,12 +144,12 @@ public class QualitiesManager {
             qualities.forEach(itemPath -> {
                 try {
                     var json = Files.readString(itemPath);
-                    if (config.debugMode)
+                    if (getConfig().debugMode)
                         main.getLogger().info("Registering ItemQuality '%s'...".formatted(itemPath.getFileName()));
                     var quality = ItemQuality.deserialize(json);
 
                     Registries.qualitiesRegistry.register(quality.key, quality);
-                    if (config.debugMode)
+                    if (getConfig().debugMode)
                         main.getLogger().info("ItemQuality '%s' successfully registered!".formatted(quality.key));
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -172,11 +171,11 @@ public class QualitiesManager {
         List<String> newLore = (itemMeta.getLore() != null) ? itemMeta.getLore() : new ArrayList<>();
         newLore.add("");
 
-        if(!config.displayQualityInLore) {
+        if (!getConfig().displayQualityInLore) {
             String itemName = WordUtils.capitalize(itemStack.getType().toString().toLowerCase().replace("_", " "));
-            itemMeta.setDisplayName(colorize(config.itemQualityDisplayFormat.replace("{QUALITY}", itemQuality.display).replace("{ITEM}", itemName)));
+            itemMeta.setDisplayName(colorize(getConfig().itemQualityDisplayFormat.replace("{QUALITY}", itemQuality.display).replace("{ITEM}", itemName)));
         } else {
-            newLore.add(colorize("&r%s &rQuality".formatted(itemQuality.display)));
+            newLore.add(colorize("&r%s &7Quality".formatted(itemQuality.display)));
             newLore.add("");
         }
 
@@ -184,6 +183,9 @@ public class QualitiesManager {
             newLore.add(colorize("&c+%s Durability Loss".formatted(itemQuality.extraDurabilityLoss)));
         if (itemQuality.noDurabilityLossChance > 0)
             newLore.add(colorize("&aNo Durability Loss &o(%s%% Chance)".formatted(itemQuality.noDurabilityLossChance)));
+
+        if (itemQuality.itemMaxDurabilityAddition != 0)
+            newLore.add(colorize("%s%s Max Durability".formatted((itemQuality.itemMaxDurabilityAddition < 0) ? "&c" : "&a+", itemQuality.itemMaxDurabilityAddition)));
 
         if (isMeleeWeapon(itemStack) || isMiningTool(itemStack) || isProjectileLauncher(itemStack)) {
             if (itemQuality.noDropChance > 0)

@@ -1,5 +1,6 @@
 package com.abraxas.itemqualities.utils;
 
+import com.abraxas.itemqualities.Config;
 import com.abraxas.itemqualities.ItemQualities;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.WordUtils;
@@ -70,5 +71,9 @@ public class Utils {
 
     public static void log(String message) {
         ItemQualities.getInstance().getLogger().info(colorize(message));
+    }
+
+    public static Config getConfig() {
+        return ItemQualities.getInstance().getConfiguration();
     }
 }

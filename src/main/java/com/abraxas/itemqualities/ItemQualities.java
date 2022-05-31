@@ -13,6 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static com.abraxas.itemqualities.utils.Utils.log;
+
 public final class ItemQualities extends JavaPlugin {
     private static ItemQualities instance;
 
@@ -29,36 +31,36 @@ public final class ItemQualities extends JavaPlugin {
         instance = this;
         CommandAPI.onEnable(instance);
 
-        config = loadConfig();
+        loadConfig();
         QualitiesManager.loadAndRegister();
 
         Commands.register();
 
         Utils.registerEvents(new ItemListeners());
 
-        Utils.log("Successfully enabled.");
+        log("Successfully enabled.");
     }
 
     @Override
     public void onDisable() {
-        Utils.log("Successfully disabled.");
+        log("Successfully disabled.");
     }
 
-    Config loadConfig(){
+    void loadConfig() {
         try {
             if (!Files.exists(Path.of(getConfigPath()))) {
                 saveResource("config.json", true);
-                return loadConfig();
+                loadConfig();
+                return;
             }
             var file = new File(configPath);
             var contents = Files.readString(file.toPath(), StandardCharsets.UTF_8);
             var json = JsonParser.parseString(contents);
 
-            return Config.deserialize(String.valueOf(json));
+            config = Config.deserialize(String.valueOf(json));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     public Config getConfiguration() {

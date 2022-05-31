@@ -1,6 +1,5 @@
 package com.abraxas.itemqualities.listeners;
 
-import com.abraxas.itemqualities.Config;
 import com.abraxas.itemqualities.ItemQualities;
 import com.abraxas.itemqualities.QualitiesManager;
 import com.abraxas.itemqualities.api.DurabilityManager;
@@ -30,8 +29,6 @@ import static com.abraxas.itemqualities.utils.Utils.chanceOf;
 
 public class ItemListeners implements Listener {
     ItemQualities main = ItemQualities.getInstance();
-
-    Config config = main.getConfiguration();
 
     @EventHandler
     public void onOpenInventory(InventoryOpenEvent event) {

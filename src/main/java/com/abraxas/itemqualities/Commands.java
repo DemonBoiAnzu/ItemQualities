@@ -8,26 +8,32 @@ import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.abraxas.itemqualities.utils.Utils.colorize;
+import static com.abraxas.itemqualities.utils.Utils.getConfig;
 
 public class Commands {
     static ItemQualities main = ItemQualities.getInstance();
 
-    static Config config = main.getConfiguration();
-
     public static void register(){
-        String[] qualityNamespaces = new String[Registries.qualitiesRegistry.getRegistry().size()+1];
-        AtomicInteger integer = new AtomicInteger();
-        Registries.qualitiesRegistry.getRegistry().keySet().forEach(k -> {
-            qualityNamespaces[integer.getAndIncrement()] = "%s:%s".formatted(k.getNamespace(),k.getKey());
-        });
-        qualityNamespaces[Registries.qualitiesRegistry.getRegistry().size()] = "random";
-        var qualitiesArg = new GreedyStringArgument("quality")
-                .replaceSuggestions(ArgumentSuggestions.strings(qualityNamespaces));
-
         new CommandAPICommand("qualities")
+                .withSubcommand(new CommandAPICommand("reload")
+                        .withPermission("itemqualities.admin")
+                        .executes((sender, args) -> {
+                            main.loadConfig();
+                            QualitiesManager.loadAndRegister();
+                            sender.sendMessage(colorize("%s&aSuccessfully reloaded!".formatted(getConfig().prefix)));
+                        }))
                 .withSubcommand(new CommandAPICommand("set")
                         .withPermission("itemqualities.admin")
-                        .withArguments(qualitiesArg)
+                        .withArguments(new GreedyStringArgument("quality")
+                                .replaceSuggestions(ArgumentSuggestions.strings(suggestionInfo -> {
+                                    String[] qualityNamespaces = new String[Registries.qualitiesRegistry.getRegistry().size() + 1];
+                                    AtomicInteger integer = new AtomicInteger();
+                                    Registries.qualitiesRegistry.getRegistry().keySet().forEach(k -> {
+                                        qualityNamespaces[integer.getAndIncrement()] = "%s:%s".formatted(k.getNamespace(), k.getKey());
+                                    });
+                                    qualityNamespaces[Registries.qualitiesRegistry.getRegistry().size()] = "random";
+                                    return qualityNamespaces;
+                                })))
                         .executesPlayer((player,args) -> {
                             var qualArgString = (String)args[0];
                             var quality = QualitiesManager.getRandomQuality();
@@ -36,13 +42,13 @@ public class Commands {
                             var item = player.getInventory().getItemInMainHand();
 
                             if(!QualitiesManager.itemCanHaveQuality(item)){
-                                player.sendMessage(colorize("%s&cThis item cannot have a Quality applied to it.".formatted(config.prefix)));
+                                player.sendMessage(colorize("%s&cThis item cannot have a Quality applied to it.".formatted(getConfig().prefix)));
                                 return;
                             }
                             if(QualitiesManager.itemHasQuality(item)) QualitiesManager.removeQualityFromItem(item);
 
-                            QualitiesManager.addQualityToItem(item,quality);
-                            player.sendMessage(colorize("%s&aSuccessfully set your items quality to &e%s&a!".formatted(config.prefix,quality.display)));
+                            QualitiesManager.addQualityToItem(item, quality);
+                            player.sendMessage(colorize("%s&aSuccessfully set your items quality to &e%s&a!".formatted(getConfig().prefix, quality.display)));
                         }))
                 .withSubcommand(new CommandAPICommand("remove")
                         .withPermission("itemqualities.admin")
@@ -50,18 +56,18 @@ public class Commands {
                             var item = player.getInventory().getItemInMainHand();
 
                             if(!QualitiesManager.itemCanHaveQuality(item)){
-                                player.sendMessage(colorize("%s&cThis item cannot have a Quality applied to it, thus you cannot remove a Quality from it.".formatted(config.prefix)));
+                                player.sendMessage(colorize("%s&cThis item cannot have a Quality applied to it, thus you cannot remove a Quality from it.".formatted(getConfig().prefix)));
                                 return;
                             }
                             if(!QualitiesManager.itemHasQuality(item)){
-                                player.sendMessage(colorize("%s&cThis item does not have a Quality.".formatted(config.prefix)));
+                                player.sendMessage(colorize("%s&cThis item does not have a Quality.".formatted(getConfig().prefix)));
                                 return;
                             }
 
                             var itemsQuality = QualitiesManager.getQuality(item);
 
                             QualitiesManager.removeQualityFromItem(item);
-                            player.sendMessage(colorize("%s&aSuccessfully removed &e%s &afrom your item!".formatted(config.prefix,itemsQuality.display)));
+                            player.sendMessage(colorize("%s&aSuccessfully removed &e%s &afrom your item!".formatted(getConfig().prefix, itemsQuality.display)));
                         }))
                 .register();
     }
