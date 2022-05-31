@@ -5,7 +5,6 @@ import com.abraxas.itemqualities.ItemQualities;
 import com.abraxas.itemqualities.QualitiesManager;
 import com.abraxas.itemqualities.api.DurabilityManager;
 import com.abraxas.itemqualities.api.Keys;
-import com.abraxas.itemqualities.api.quality.ItemQuality;
 import com.abraxas.itemqualities.utils.Utils;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -17,30 +16,28 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerItemDamageEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import static com.abraxas.itemqualities.utils.Utils.log;
+import static com.abraxas.itemqualities.utils.Utils.chanceOf;
 
 public class ItemListeners implements Listener {
-    // TODO: Make no drops/double drops function for weapons/tools
     ItemQualities main = ItemQualities.getInstance();
 
     Config config = main.getConfiguration();
 
     @EventHandler
     public void onOpenInventory(InventoryOpenEvent event) {
-        Inventory inv = event.getInventory();
+        var inv = event.getInventory();
         for (int i = 0; i < inv.getSize(); i++) {
-            ItemStack item = inv.getItem(i);
+            var item = inv.getItem(i);
             if (item != null) {
                 if (QualitiesManager.itemCanHaveQuality(item) && !QualitiesManager.itemHasQuality(item))
                     QualitiesManager.addQualityToItem(item,QualitiesManager.getRandomQuality());
@@ -50,13 +47,13 @@ public class ItemListeners implements Listener {
 
     @EventHandler
     public void onCloseInventory(InventoryCloseEvent event) {
-        Player player = (Player) event.getPlayer();
-        Inventory inventory = player.getInventory();
+        var player = (Player) event.getPlayer();
+        var inventory = player.getInventory();
         for (int i = 0; i < 35; i++) {
-            ItemStack item = inventory.getItem(i);
+            var item = inventory.getItem(i);
             if (item != null) {
                 if (QualitiesManager.itemCanHaveQuality(item) && !QualitiesManager.itemHasQuality(item))
-                    QualitiesManager.addQualityToItem(item,QualitiesManager.getRandomQuality());
+                    QualitiesManager.addQualityToItem(item, QualitiesManager.getRandomQuality());
             }
         }
     }
@@ -64,7 +61,7 @@ public class ItemListeners implements Listener {
     @EventHandler
     public void onPickupItem(EntityPickupItemEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
-        ItemStack item = event.getItem().getItemStack();
+        var item = event.getItem().getItemStack();
         if (QualitiesManager.itemCanHaveQuality(item) && !QualitiesManager.itemHasQuality(item)){
             QualitiesManager.addQualityToItem(item,QualitiesManager.getRandomQuality());
             event.getItem().setItemStack(item);
@@ -74,7 +71,7 @@ public class ItemListeners implements Listener {
     @EventHandler
     public void onClick(InventoryClickEvent event) {
         if (event.isCancelled()) return;
-        ItemStack item = event.getCurrentItem();
+        var item = event.getCurrentItem();
         if (item == null) return;
         if (QualitiesManager.itemCanHaveQuality(item) && !QualitiesManager.itemHasQuality(item)) {
             QualitiesManager.addQualityToItem(item, QualitiesManager.getRandomQuality());
@@ -87,10 +84,10 @@ public class ItemListeners implements Listener {
         if (event.isRepair()) event.getInventory().setResult(new ItemStack(Material.AIR));
         if (event.getInventory().getResult() == null || event.getInventory().getResult().getType().equals(Material.AIR))
             return;
-        ItemStack item = event.getInventory().getResult().clone();
+        var item = event.getInventory().getResult().clone();
 
         if (QualitiesManager.itemCanHaveQuality(item)) {
-            ItemMeta meta = item.getItemMeta();
+            var meta = item.getItemMeta();
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             item.setItemMeta(meta);
         }
@@ -100,8 +97,8 @@ public class ItemListeners implements Listener {
     @EventHandler
     public void onCraft(CraftItemEvent event) {
         event.getInventory().getViewers().forEach(humanEntity -> {
-            Player player = (Player) humanEntity;
-            ItemStack item = event.getInventory().getResult();
+            var player = (Player) humanEntity;
+            var item = event.getInventory().getResult();
             if (item == null) return;
             var itemMeta = item.getItemMeta();
             itemMeta.removeItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -117,11 +114,11 @@ public class ItemListeners implements Listener {
                 return;
             }
             if (event.isShiftClick()) {
-                final ItemStack[] preInv = player.getInventory().getContents();
+                var preInv = player.getInventory().getContents();
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        final ItemStack[] postInv = player.getInventory().getContents();
+                        var postInv = player.getInventory().getContents();
 
                         for (int i = 0; i < preInv.length; i++) {
                             if (preInv[i] != postInv[i]) {
@@ -147,32 +144,69 @@ public class ItemListeners implements Listener {
 
     @EventHandler
     public void onItemDamage(PlayerItemDamageEvent event) {
-        Player player = event.getPlayer();
-        ItemStack item = event.getItem();
+        var player = event.getPlayer();
+        var item = event.getItem();
         event.setCancelled(true);
-        ItemQuality itemsQuality = QualitiesManager.getQuality(item);
+        var itemsQuality = QualitiesManager.getQuality(item);
         int damage = event.getDamage();
         if (itemsQuality != null) {
             if (itemsQuality.noDurabilityLossChance > 0) {
                 if (Utils.chanceOf(itemsQuality.noDurabilityLossChance))
                     return;
             }
-            if (Utils.chanceOf(itemsQuality.extraDurabilityLossChance)) damage += Math.abs(itemsQuality.extraDurabilityLoss);
+            if (Utils.chanceOf(itemsQuality.extraDurabilityLossChance))
+                damage += Math.abs(itemsQuality.extraDurabilityLoss);
         }
         DurabilityManager.damageItem(player, item, damage);
     }
 
     @EventHandler
     public void onBreakBlock(BlockBreakEvent event) {
-        Player player = event.getPlayer();
+        var player = event.getPlayer();
         if (!player.getGameMode().equals(GameMode.SURVIVAL)) return;
-        ItemStack item = player.getInventory().getItemInMainHand();
+        var item = player.getInventory().getItemInMainHand();
         if (item.getType().equals(Material.AIR)) return;
         if (!QualitiesManager.itemHasQuality(item)) return;
 
-        ItemQuality itemsQuality = QualitiesManager.getQuality(item);
+        var itemsQuality = QualitiesManager.getQuality(item);
         if (itemsQuality == null) return;
-        event.setDropItems(itemsQuality.noDropChance <= 0 || !Utils.chanceOf(itemsQuality.noDropChance));
+        if (itemsQuality.noDropChance > 0 && chanceOf(itemsQuality.noDropChance)) {
+            event.setDropItems(false);
+            return;
+        }
+
+        if (itemsQuality.doubleDropsChance > 0 && chanceOf(itemsQuality.doubleDropsChance)) {
+            event.setDropItems(false);
+            var drops = event.getBlock().getDrops(item, player);
+            drops.forEach(d -> {
+                d.setAmount(d.getAmount() * 2);
+                player.getWorld().dropItemNaturally(event.getBlock().getLocation(), d);
+            });
+        }
+    }
+
+    @EventHandler
+    public void onKillEntity(EntityDeathEvent event) {
+        if (!(event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent dmg)) return;
+        if (!(dmg.getDamager() instanceof LivingEntity attacker)) return;
+        var attackersEquipment = attacker.getEquipment();
+        if (attackersEquipment == null) return;
+        var attackersItem = attackersEquipment.getItemInMainHand();
+        if (attackersItem.getType().equals(Material.AIR)) return;
+        if (!QualitiesManager.itemHasQuality(attackersItem)) return;
+
+        var itemsQuality = QualitiesManager.getQuality(attackersItem);
+        if (itemsQuality == null) return;
+        if (itemsQuality.noDropChance > 0 && chanceOf(itemsQuality.noDropChance)) {
+            event.getDrops().clear();
+            return;
+        }
+
+        if (itemsQuality.doubleDropsChance > 0 && chanceOf(itemsQuality.doubleDropsChance)) {
+            event.getDrops().forEach(d -> {
+                d.setAmount(d.getAmount() * 2);
+            });
+        }
     }
 
     @EventHandler
@@ -190,19 +224,13 @@ public class ItemListeners implements Listener {
 
         if (itemMeta.getAttributeModifiers(Attribute.GENERIC_ATTACK_DAMAGE) == null) return;
         var atkDmgMod = itemMeta.getAttributeModifiers(Attribute.GENERIC_ATTACK_DAMAGE).stream().findFirst();
-        if (atkDmgMod.isPresent()) {
-            var value = atkDmgMod.get().getAmount();
-            proj.getPersistentDataContainer().set(Keys.ITEM_PROJECTILE_DAMAGE_KEY, PersistentDataType.DOUBLE, value);
-            log("Setting damage from ItemQuality to projectile: %s".formatted(value));
-        }
+        atkDmgMod.ifPresent(attributeModifier -> proj.getPersistentDataContainer().set(Keys.ITEM_PROJECTILE_DAMAGE_KEY, PersistentDataType.DOUBLE, attributeModifier.getAmount()));
     }
 
     @EventHandler
     public void onEntityHitByProjectile(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Projectile proj)) return;
-        log("Initial damage: %s".formatted(event.getDamage()));
         var value = proj.getPersistentDataContainer().getOrDefault(Keys.ITEM_PROJECTILE_DAMAGE_KEY, PersistentDataType.DOUBLE, 0d);
         event.setDamage(event.getDamage() + value);
-        log("New damage: %s".formatted(event.getDamage()));
     }
 }
