@@ -20,6 +20,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -143,7 +144,7 @@ public class QualitiesManager {
             main.getLogger().info("Registering local ItemQuality files...");
             qualities.forEach(itemPath -> {
                 try {
-                    var json = Files.readString(itemPath);
+                    var json = Files.readString(itemPath, StandardCharsets.UTF_8);
                     if (getConfig().debugMode)
                         main.getLogger().info("Registering ItemQuality '%s'...".formatted(itemPath.getFileName()));
                     var quality = ItemQuality.deserialize(json);
@@ -172,7 +173,7 @@ public class QualitiesManager {
         newLore.add("");
 
         if (!getConfig().displayQualityInLore) {
-            String itemName = WordUtils.capitalize(itemStack.getType().toString().toLowerCase().replace("_", " "));
+            String itemName = Utils.formalizedString(itemStack.getType().toString());
             itemMeta.setDisplayName(colorize(getConfig().itemQualityDisplayFormat.replace("{QUALITY}", itemQuality.display).replace("{ITEM}", itemName)));
         } else {
             newLore.add(colorize("&r%s &7Quality".formatted(itemQuality.display)));
