@@ -112,6 +112,7 @@ public class QualitiesManager {
                 exampleQualities.forEach(i -> {
                     var path = Path.of("%s/qualities/%s.json".formatted(main.getDataFolder(), i.key.getKey()));
                     if (!Files.exists(path)) {
+                        i.display = colorize(i.display);
                         var itDes = ItemQuality.serialize(i);
                         try {
                             var f = new File(String.valueOf(path));
