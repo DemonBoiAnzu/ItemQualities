@@ -1,5 +1,5 @@
 # ItemQualities
-A plugin that adds Qualities to Items, along with the ability for the user to create their own. (NOT released yet.)
+A plugin that adds Qualities to Items, along with the ability for the user to create their own.
 
 Inspired by Item Qualities in Terraria.
 
