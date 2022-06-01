@@ -32,9 +32,9 @@ public class QualitiesManager {
     static ItemQualities main = ItemQualities.getInstance();
 
     static List<ItemQuality> exampleQualities = new ArrayList<>() {{
-        add(new ItemQualityBuilder(new NamespacedKey(main,"godly"), "&6Godly", 3, 10)
+        add(new ItemQualityBuilder(new NamespacedKey(main, "godly"), "&6Godly", 3, 10)
                 .withNoDurabilityLossChance(70)
-                .withMaxDurabilityAddition(100)
+                .withMaxDurabilityMod(100)
                 .withDoubleDropsChance(10)
                 .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(UUID.randomUUID(),
                         Attribute.GENERIC_ATTACK_DAMAGE.name(),
@@ -55,9 +55,9 @@ public class QualitiesManager {
                         0.1,
                         AttributeModifier.Operation.ADD_NUMBER))
                 .build());
-        add(new ItemQualityBuilder(new NamespacedKey(main,"supreme_godlike"), "&eSupreme Godlike", 1,11)
+        add(new ItemQualityBuilder(new NamespacedKey(main, "supreme_godlike"), "&eSupreme Godlike", 1, 11)
                 .withNoDurabilityLossChance(95)
-                .withMaxDurabilityAddition(200)
+                .withMaxDurabilityMod(200)
                 .withDoubleDropsChance(60)
                 .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(UUID.randomUUID(),
                         Attribute.GENERIC_ATTACK_DAMAGE.name(),
@@ -78,10 +78,10 @@ public class QualitiesManager {
                         0.15,
                         AttributeModifier.Operation.ADD_NUMBER))
                 .build());
-        add(new ItemQualityBuilder(new NamespacedKey(main,"horrible"), "&cHorrible",60,0)
+        add(new ItemQualityBuilder(new NamespacedKey(main, "horrible"), "&cHorrible", 60, 0)
                 .withNoDropChance(60)
-                .withAdditionalDurabilityLoss(2,90)
-                .withMaxDurabilityAddition(-10)
+                .withAdditionalDurabilityLoss(2, 90)
+                .withMaxDurabilityMod(-10)
                 .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(UUID.randomUUID(),
                         Attribute.GENERIC_ATTACK_DAMAGE.name(),
                         -2,
@@ -186,8 +186,8 @@ public class QualitiesManager {
         if (itemQuality.noDurabilityLossChance > 0)
             newLore.add(colorize("&aNo Durability Loss &o(%s%% Chance)".formatted(itemQuality.noDurabilityLossChance)));
 
-        if (itemQuality.itemMaxDurabilityAddition != 0)
-            newLore.add(colorize("%s%s Max Durability".formatted((itemQuality.itemMaxDurabilityAddition < 0) ? "&c" : "&a+", itemQuality.itemMaxDurabilityAddition)));
+        if (itemQuality.itemMaxDurabilityMod != 0)
+            newLore.add(colorize("%s%s Max Durability".formatted((itemQuality.itemMaxDurabilityMod < 0) ? "&c" : "&a+", itemQuality.itemMaxDurabilityMod)));
 
         if (isMeleeWeapon(itemStack) || isMiningTool(itemStack) || isProjectileLauncher(itemStack)) {
             if (itemQuality.noDropChance > 0)
@@ -281,9 +281,9 @@ public class QualitiesManager {
         });
 
         var maxDur = DurabilityManager.getItemMaxDurability(itemStack);
-        if(itemQuality.itemMaxDurabilityAddition > 0) {
-            maxDur += itemQuality.itemMaxDurabilityAddition;
-            itemMeta.getPersistentDataContainer().set(Keys.MAX_ITEM_DURABILITY_KEY,PersistentDataType.INTEGER,maxDur);
+        if (itemQuality.itemMaxDurabilityMod > 0) {
+            maxDur += itemQuality.itemMaxDurabilityMod;
+            itemMeta.getPersistentDataContainer().set(Keys.MAX_ITEM_DURABILITY_KEY, PersistentDataType.INTEGER, maxDur);
         }
 
         itemStack.setItemMeta(itemMeta);

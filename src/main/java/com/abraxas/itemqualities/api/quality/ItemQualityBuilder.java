@@ -10,21 +10,21 @@ import java.util.Map;
 public class ItemQualityBuilder {
     ItemQuality itemQuality;
 
-    public ItemQualityBuilder(NamespacedKey key, String qualityDisplay, int addToItemChance, int tier){
-        itemQuality = new ItemQuality(key,qualityDisplay,addToItemChance, tier);
+    public ItemQualityBuilder(NamespacedKey key, String qualityDisplay, int addToItemChance, int tier) {
+        itemQuality = new ItemQuality(key, qualityDisplay, addToItemChance, tier);
     }
 
-    public ItemQualityBuilder withMaxDurabilityAddition(int addition){
-        itemQuality.itemMaxDurabilityAddition = addition;
+    public ItemQualityBuilder withMaxDurabilityMod(int addition) {
+        itemQuality.itemMaxDurabilityMod = addition;
         return this;
     }
 
-    public ItemQualityBuilder withNoDropChance(int chance){
+    public ItemQualityBuilder withNoDropChance(int chance) {
         itemQuality.noDropChance = chance;
         return this;
     }
 
-    public ItemQualityBuilder withDoubleDropsChance(int chance){
+    public ItemQualityBuilder withDoubleDropsChance(int chance) {
         itemQuality.doubleDropsChance = chance;
         return this;
     }

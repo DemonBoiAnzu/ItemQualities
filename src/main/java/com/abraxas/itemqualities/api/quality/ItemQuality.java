@@ -16,7 +16,7 @@ public class ItemQuality {
 
     public int addToItemChance;
 
-    public int itemMaxDurabilityAddition;
+    public int itemMaxDurabilityMod;
     public int noDurabilityLossChance;
     public int extraDurabilityLoss;
     public int extraDurabilityLossChance;
