@@ -8,12 +8,14 @@ public class Config {
     public String itemQualityDisplayFormat = "{QUALITY} &r{ITEM}";
     public boolean exampleItemQualitiesEnabled = true;
     public boolean displayQualityInLore = false;
+    public boolean newUpdateMessageOnReload = false;
+    public boolean newUpdateMessageOnJoin = false;
 
-    public static Config deserialize(String json){
-        return APIUtils.getGson().fromJson(json,Config.class);
+    public static Config deserialize(String json) {
+        return APIUtils.getGson().fromJson(json, Config.class);
     }
 
-    public static String serialize(Config item){
-        return APIUtils.getGson().toJson(item,Config.class);
+    public static String serialize(Config item) {
+        return APIUtils.getGson().toJson(item, Config.class);
     }
 }

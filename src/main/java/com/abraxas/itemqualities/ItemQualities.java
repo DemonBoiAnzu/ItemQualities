@@ -1,6 +1,8 @@
 package com.abraxas.itemqualities;
 
 import com.abraxas.itemqualities.listeners.ItemListeners;
+import com.abraxas.itemqualities.listeners.ServerListeners;
+import com.abraxas.itemqualities.utils.UpdateChecker;
 import com.abraxas.itemqualities.utils.Utils;
 import com.google.gson.JsonParser;
 import dev.jorel.commandapi.CommandAPI;
@@ -37,6 +39,9 @@ public final class ItemQualities extends JavaPlugin {
         Commands.register();
 
         Utils.registerEvents(new ItemListeners());
+        Utils.registerEvents(new ServerListeners());
+
+        UpdateChecker.checkForNewVersion();
 
         log("Successfully enabled.");
     }

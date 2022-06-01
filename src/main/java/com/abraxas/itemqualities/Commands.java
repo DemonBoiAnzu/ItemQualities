@@ -1,6 +1,7 @@
 package com.abraxas.itemqualities;
 
 import com.abraxas.itemqualities.api.Registries;
+import com.abraxas.itemqualities.utils.UpdateChecker;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
@@ -21,6 +22,8 @@ public class Commands {
                             main.loadConfig();
                             QualitiesManager.loadAndRegister();
                             sender.sendMessage(colorize("%s&aSuccessfully reloaded!".formatted(getConfig().prefix)));
+
+                            if (getConfig().newUpdateMessageOnReload) UpdateChecker.sendNewVersionNotif(sender);
                         }))
                 .withSubcommand(new CommandAPICommand("set")
                         .withPermission("itemqualities.admin")
