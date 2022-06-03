@@ -4,6 +4,8 @@ import com.abraxas.itemqualities.Config;
 import com.abraxas.itemqualities.ItemQualities;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.WordUtils;
+import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
@@ -13,6 +15,10 @@ import java.util.regex.Pattern;
 
 public class Utils {
     static Random random = new Random();
+
+    public static int getReforgeEXPCost(Material mat) {
+        return getConfig().reforgeEXPLevelCosts.getOrDefault(mat, -1);
+    }
 
     public static String colorize(String string) {
         Pattern HEX_PATTERN = Pattern.compile("<#([A-Fa-f0-9]){6}>");
@@ -71,6 +77,18 @@ public class Utils {
 
     public static void log(String message) {
         ItemQualities.getInstance().getLogger().info(colorize(message));
+    }
+
+    public static void sendMessageWithoutPrefix(CommandSender receiver, String message) {
+        sendMessage(receiver, message, false);
+    }
+
+    public static void sendMessageWithPrefix(CommandSender receiver, String message) {
+        sendMessage(receiver, message, true);
+    }
+
+    static void sendMessage(CommandSender receiver, String message, boolean withPrefix) {
+        receiver.sendMessage(colorize("%s%s".formatted((withPrefix) ? getConfig().prefix : "", message)));
     }
 
     public static Config getConfig() {

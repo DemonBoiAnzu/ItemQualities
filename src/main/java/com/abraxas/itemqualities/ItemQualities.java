@@ -1,5 +1,6 @@
 package com.abraxas.itemqualities;
 
+import com.abraxas.itemqualities.listeners.BlockListeners;
 import com.abraxas.itemqualities.listeners.ItemListeners;
 import com.abraxas.itemqualities.listeners.ServerListeners;
 import com.abraxas.itemqualities.utils.UpdateChecker;
@@ -39,6 +40,7 @@ public final class ItemQualities extends JavaPlugin {
         Commands.register();
 
         Utils.registerEvents(new ItemListeners());
+        Utils.registerEvents(new BlockListeners());
         Utils.registerEvents(new ServerListeners());
 
         UpdateChecker.checkForNewVersion();
@@ -55,6 +57,7 @@ public final class ItemQualities extends JavaPlugin {
         try {
             if (!Files.exists(Path.of(getConfigPath()))) {
                 saveResource("config.json", true);
+                saveDefConfig();
                 loadConfig();
                 return;
             }
@@ -63,9 +66,22 @@ public final class ItemQualities extends JavaPlugin {
             var json = JsonParser.parseString(contents);
 
             config = Config.deserialize(String.valueOf(json));
+            if (!json.getAsJsonObject().has("reforgeEXPLevelCosts")) {
+                saveDefConfig();
+                loadConfig();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    void saveDefConfig() throws IOException {
+        var newConfig = new Config();
+        newConfig.prefix = Utils.colorize(newConfig.prefix);
+        newConfig.itemQualityDisplayFormat = Utils.colorize(newConfig.itemQualityDisplayFormat);
+        var defaultConfig = Config.serialize(newConfig);
+        var file = new File(configPath);
+        Files.writeString(file.toPath(), defaultConfig);
     }
 
     public Config getConfiguration() {
