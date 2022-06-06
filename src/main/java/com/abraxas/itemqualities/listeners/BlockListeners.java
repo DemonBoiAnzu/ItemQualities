@@ -4,6 +4,7 @@ import com.abraxas.itemqualities.ItemQualities;
 import com.abraxas.itemqualities.QualitiesManager;
 import com.abraxas.itemqualities.utils.Utils;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.event.EventHandler;
@@ -26,6 +27,8 @@ public class BlockListeners implements Listener {
                 hand != EquipmentSlot.HAND ||
                 block == null ||
                 !player.isSneaking()) return;
+
+        if (!block.getType().equals(Material.ANVIL)) return;
 
         var cost = Utils.getReforgeEXPCost(item.getType());
         if (!QualitiesManager.itemHasQuality(item) || cost <= 0) {
