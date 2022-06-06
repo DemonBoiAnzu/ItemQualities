@@ -15,11 +15,14 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ResourceBundle;
 
 import static com.abraxas.itemqualities.utils.Utils.log;
 
 public final class ItemQualities extends JavaPlugin {
     private static ItemQualities instance;
+
+    ResourceBundle langBundle;
 
     Config config;
     String configPath = "%s/config.json".formatted(getDataFolder());
@@ -31,6 +34,7 @@ public final class ItemQualities extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        long start = System.currentTimeMillis();
         instance = this;
         CommandAPI.onEnable(instance);
 
@@ -45,12 +49,12 @@ public final class ItemQualities extends JavaPlugin {
 
         UpdateChecker.checkForNewVersion();
 
-        log("Successfully enabled.");
+        log(getLangBundle().getString("message.plugin.enabled").formatted((float) (System.currentTimeMillis() - start) / 1000));
     }
 
     @Override
     public void onDisable() {
-        log("Successfully disabled.");
+        log(getLangBundle().getString("message.plugin.disabled"));
     }
 
     void loadConfig() {
@@ -73,6 +77,7 @@ public final class ItemQualities extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        langBundle = ResourceBundle.getBundle("language", config.locale);
     }
 
     void saveDefConfig() throws IOException {
@@ -82,6 +87,14 @@ public final class ItemQualities extends JavaPlugin {
         var defaultConfig = Config.serialize(newConfig);
         var file = new File(configPath);
         Files.writeString(file.toPath(), defaultConfig);
+    }
+
+    public ResourceBundle getLangBundle() {
+        return langBundle;
+    }
+
+    public String getTranslation(String key) {
+        return new String(getLangBundle().getString(key).getBytes(StandardCharsets.UTF_8));
     }
 
     public Config getConfiguration() {

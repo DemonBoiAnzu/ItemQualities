@@ -4,6 +4,7 @@ import com.abraxas.itemqualities.api.APIUtils;
 import org.bukkit.Material;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class Config {
@@ -14,6 +15,7 @@ public class Config {
     public boolean displayQualityInLore = false;
     public boolean newUpdateMessageOnReload = true;
     public boolean newUpdateMessageOnJoin = true;
+    public Locale locale = Locale.ENGLISH;
     public Map<Material, Integer> reforgeEXPLevelCosts = new LinkedHashMap<>() {{
         put(Material.WOODEN_SWORD, 1);
         put(Material.WOODEN_AXE, 1);

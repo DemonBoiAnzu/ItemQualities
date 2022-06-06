@@ -21,7 +21,7 @@ public class Commands {
                         .executes((sender, args) -> {
                             main.loadConfig();
                             QualitiesManager.loadAndRegister();
-                            Utils.sendMessageWithPrefix(sender, "&aSuccessfully reloaded!");
+                            Utils.sendMessageWithPrefix(sender, main.getTranslation("message.commands.reloaded"));
 
                             if (getConfig().newUpdateMessageOnReload) UpdateChecker.sendNewVersionNotif(sender);
                         }))
@@ -45,13 +45,13 @@ public class Commands {
                             if(qualArgString != "random" && qualArg.length > 1) quality = QualitiesManager.getQualityById(qualArg[1]);
 
                             if(!QualitiesManager.itemCanHaveQuality(item)){
-                                Utils.sendMessageWithPrefix(player, "&cThis item cannot have a Quality applied to it.");
+                                Utils.sendMessageWithPrefix(player, main.getTranslation("message.commands.item_cant_have_quality"));
                                 return;
                             }
                             if(QualitiesManager.itemHasQuality(item)) QualitiesManager.removeQualityFromItem(item);
 
                             QualitiesManager.addQualityToItem(item, quality);
-                            Utils.sendMessageWithPrefix(player, "&aSuccessfully set your items quality to &e%s&a!".formatted(quality.display));
+                            Utils.sendMessageWithPrefix(player, main.getTranslation("message.commands.items_quality_set").formatted(quality.display));
                         }))
                 .withSubcommand(new CommandAPICommand("remove")
                         .withPermission("itemqualities.admin")
@@ -59,18 +59,18 @@ public class Commands {
                             var item = player.getInventory().getItemInMainHand();
 
                             if(!QualitiesManager.itemCanHaveQuality(item)){
-                                Utils.sendMessageWithPrefix(player, "&cThis item cannot have a Quality applied to it, thus you cannot remove a Quality from it.");
+                                Utils.sendMessageWithPrefix(player, main.getTranslation("message.commands.item_cant_remove_quality"));
                                 return;
                             }
                             if(!QualitiesManager.itemHasQuality(item)){
-                                Utils.sendMessageWithPrefix(player, "&cThis item does not have a Quality.");
+                                Utils.sendMessageWithPrefix(player, main.getTranslation("message.commands.item_has_no_quality"));
                                 return;
                             }
 
                             var itemsQuality = QualitiesManager.getQuality(item);
 
                             QualitiesManager.removeQualityFromItem(item);
-                            Utils.sendMessageWithPrefix(player, "&aSuccessfully removed &e%s &afrom your item!".formatted(itemsQuality.display));
+                            Utils.sendMessageWithPrefix(player, main.getTranslation("message.commands.quality_removed").formatted(itemsQuality.display));
                         }))
                 .register();
     }

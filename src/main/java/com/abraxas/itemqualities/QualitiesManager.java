@@ -8,6 +8,7 @@ import com.abraxas.itemqualities.api.quality.ItemQuality;
 import com.abraxas.itemqualities.api.quality.ItemQualityBuilder;
 import com.abraxas.itemqualities.utils.Utils;
 import com.google.common.collect.Multimap;
+import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -184,26 +185,26 @@ public class QualitiesManager {
             }
             Registries.qualitiesRegistry.getRegistry().clear();
 
-            main.getLogger().info("Loading local ItemQuality files...");
+            Utils.log(main.getTranslation("message.plugin.loading_local_quality_files"));
             var qualities = Files.list(Path.of("%s/qualities".formatted(main.getDataFolder()))).toList();
-            main.getLogger().info("Registering local ItemQuality files...");
+            Utils.log(main.getTranslation("message.plugin.registering_qualities"));
             qualities.forEach(itemPath -> {
                 try {
                     var json = Files.readString(itemPath, StandardCharsets.UTF_8);
                     if (getConfig().debugMode)
-                        main.getLogger().info("Registering ItemQuality '%s'...".formatted(itemPath.getFileName()));
+                        Utils.log(main.getTranslation("message.plugin.registering_quality").formatted(itemPath.getFileName()));
                     var quality = ItemQuality.deserialize(json);
 
                     Registries.qualitiesRegistry.register(quality.key, quality);
                     if (getConfig().debugMode)
-                        main.getLogger().info("ItemQuality '%s' successfully registered!".formatted(quality.key));
+                        Utils.log(main.getTranslation("message.plugin.quality_registered").formatted(quality.key));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             });
-            main.getLogger().info("ItemQuality registration completed.");
+            Utils.log(main.getTranslation("message.plugin.registration_complete"));
         } catch (IOException e) {
-            main.getLogger().info("An error occurred during ItemQuality registration.");
+            Utils.log(main.getTranslation("message.plugin.registration_error"));
             e.printStackTrace();
         }
     }
@@ -217,26 +218,26 @@ public class QualitiesManager {
         List<String> newLore = (itemMeta.getLore() != null) ? itemMeta.getLore() : new ArrayList<>();
 
         if (!getConfig().displayQualityInLore) {
-            String itemName = Utils.formalizedString(itemStack.getType().toString());
+            String itemName = new TranslatableComponent("item.minecraft.%s".formatted(itemStack.getType().toString().toLowerCase())).toPlainText();
             itemMeta.setDisplayName(colorize(getConfig().itemQualityDisplayFormat.replace("{QUALITY}", itemQuality.display).replace("{ITEM}", itemName)));
         } else {
-            newLore.add(colorize("&r%s &7Quality".formatted(itemQuality.display)));
+            newLore.add(colorize("&r%s %s".formatted(itemQuality.display, main.getTranslation("lore.stat.quality"))));
             newLore.add("");
         }
 
         if (itemQuality.extraDurabilityLoss > 0)
-            newLore.add(colorize("&c+%s Durability Loss".formatted(itemQuality.extraDurabilityLoss)));
+            newLore.add(colorize("&c+%s %s".formatted(itemQuality.extraDurabilityLoss, main.getTranslation("lore.stat.durability_loss"))));
         if (itemQuality.noDurabilityLossChance > 0)
-            newLore.add(colorize("&aNo Durability Loss &o(%s%% Chance)".formatted(itemQuality.noDurabilityLossChance)));
+            newLore.add(colorize("&a%s".formatted(main.getTranslation("lore.stat.no_durability_loss").formatted(itemQuality.noDurabilityLossChance))));
 
         if (itemQuality.itemMaxDurabilityMod != 0)
-            newLore.add(colorize("%s%s Max Durability".formatted((itemQuality.itemMaxDurabilityMod < 0) ? "&c" : "&a+", itemQuality.itemMaxDurabilityMod)));
+            newLore.add(colorize("%s%s %s".formatted((itemQuality.itemMaxDurabilityMod < 0) ? "&c" : "&a+", itemQuality.itemMaxDurabilityMod, main.getTranslation("lore.stat.max_durability"))));
 
         if (isMeleeWeapon(itemStack) || isMiningTool(itemStack) || isProjectileLauncher(itemStack)) {
             if (itemQuality.noDropChance > 0)
-                newLore.add(colorize("&cNo Drops &o(%s%% Chance)".formatted(itemQuality.noDropChance)));
+                newLore.add(colorize("&c%s".formatted(main.getTranslation("lore.stat.no_drops").formatted(itemQuality.noDropChance))));
             else if (itemQuality.doubleDropsChance > 0)
-                newLore.add(colorize("&aDouble Drops &o(%s%% Chance)".formatted(itemQuality.doubleDropsChance)));
+                newLore.add(colorize("&a%s".formatted(main.getTranslation("lore.stat.double_drops").formatted(itemQuality.doubleDropsChance))));
         }
 
         if (itemQuality.modifiers.size() > 0) newLore.add("");
@@ -313,7 +314,13 @@ public class QualitiesManager {
                 itemMeta.removeAttributeModifier(attribute);
                 if (itemMeta.getAttributeModifiers() == null || !itemMeta.getAttributeModifiers().containsKey(attribute))
                     itemMeta.addAttributeModifier(attribute, newMod);
-                newLore.add(colorize((attributeModifier.getAmount() > 0) ? "&a+" : "&c") + attributeModifier.getAmount() + " " + WordUtils.capitalize(attribute.name().toLowerCase().replace("_", " ").replace("generic ", "")));
+                var attrN = attribute.name().toLowerCase().replace("generic_", "generic.");
+                var attrTrans = new TranslatableComponent("attribute.name.%s".formatted(attrN));
+                //log(attrTrans.toPlainText());
+
+                var attrFinal = attrTrans.toPlainText();
+                //WordUtils.capitalize(attribute.name().toLowerCase().replace("_", " ").replace("generic ", ""));
+                newLore.add(colorize((attributeModifier.getAmount() > 0) ? "&a+" : "&c") + attributeModifier.getAmount() + " " + attrFinal);
             }
         });
 
@@ -321,7 +328,9 @@ public class QualitiesManager {
 
         defAttributes.forEach((equipmentSlot, attributeAttributeModifierMultimap) -> {
             attributeAttributeModifierMultimap.forEach((attribute, attributeModifier) -> {
-                if (itemMeta.getAttributeModifiers() == null || !itemMeta.getAttributeModifiers().containsKey(attribute))
+                if (itemMeta.getAttributeModifiers() != null &&
+                        !itemMeta.getAttributeModifiers().containsKey(attribute) &&
+                        !itemMeta.getAttributeModifiers().containsValue(attributeModifier))
                     itemMeta.addAttributeModifier(attribute, attributeModifier);
             });
         });

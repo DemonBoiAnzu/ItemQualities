@@ -20,20 +20,20 @@ public class UpdateChecker {
     private static String newVersion;
 
     public static void checkForNewVersion() {
-        Utils.log(Utils.colorize("&7Checking for updates..."));
+        Utils.log(Utils.colorize(main.getTranslation("message.plugin.checking_for_update")));
         getVersion(version -> {
             var latestVersion = Integer.parseInt(version.replaceAll("\\.", ""));
             var currentVersion = Integer.parseInt(main.getDescription().getVersion().replaceAll("\\.", ""));
 
             outdated = false;
             if (currentVersion == latestVersion)
-                Utils.log(Utils.colorize("&7I'm on the latest version! (&e%s&7)".formatted(main.getDescription().getVersion())));
+                Utils.log(Utils.colorize(main.getTranslation("message.plugin.on_latest_version").formatted(main.getDescription().getVersion())));
             else if (currentVersion > latestVersion)
-                Utils.log(Utils.colorize("&7I'm on an in-dev version! (&e%s&7)".formatted(main.getDescription().getVersion())));
+                Utils.log(Utils.colorize(main.getTranslation("message.plugin.on_indev_version").formatted(main.getDescription().getVersion())));
             else {
                 outdated = true;
                 newVersion = version;
-                Utils.log(Utils.colorize("&7A new version is available to download! (&e%s - %s&7)".formatted(version, resourceLink)));
+                Utils.log(Utils.colorize("%s (&e%s - %s&7)".formatted(main.getTranslation("message.plugin.new_version_available_download"), version, resourceLink)));
             }
         });
     }
@@ -41,11 +41,11 @@ public class UpdateChecker {
     public static void sendNewVersionNotif(CommandSender sender) {
         if (!sender.isOp() || !sender.hasPermission("itemqualities.admin") || !outdated) return;
 
-        TextComponent main = new TextComponent(Utils.colorize("%s&aA new version is available for download! ".formatted(Utils.getConfig().prefix)));
+        TextComponent msg = new TextComponent(Utils.colorize("%s%s ".formatted(Utils.getConfig().prefix, main.getTranslation("message.plugin.new_version_available_download"))));
         TextComponent link = new TextComponent(Utils.colorize("&7&o(&e&o%s&7&o)".formatted(newVersion)));
         link.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, resourceLink));
-        main.addExtra(link);
-        sender.spigot().sendMessage(main);
+        msg.addExtra(link);
+        sender.spigot().sendMessage(msg);
     }
 
     static void getVersion(final Consumer<String> consumer) {

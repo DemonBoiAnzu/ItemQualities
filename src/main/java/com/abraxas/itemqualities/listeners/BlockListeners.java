@@ -32,12 +32,12 @@ public class BlockListeners implements Listener {
 
         var cost = Utils.getReforgeEXPCost(item.getType());
         if (!QualitiesManager.itemHasQuality(item) || cost <= 0) {
-            Utils.sendMessageWithPrefix(player, "&cThis item cannot be reforged.");
+            Utils.sendMessageWithPrefix(player, main.getTranslation("message.reforge.item_cant_be_reforged"));
             return;
         }
 
         if (player.getGameMode().equals(GameMode.SURVIVAL) && player.getLevel() < cost) {
-            Utils.sendMessageWithPrefix(player, "&cYou don't have enough EXP Levels to Reforge this item. &7(You need &e%s&7)".formatted(cost));
+            Utils.sendMessageWithPrefix(player, main.getTranslation("message.reforge.cant_afford").formatted(cost));
             return;
         }
 
@@ -47,10 +47,10 @@ public class BlockListeners implements Listener {
         if (player.getGameMode().equals(GameMode.SURVIVAL)) player.setLevel(player.getLevel() - cost);
         player.getWorld().playSound(block.getLocation(), Sound.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1f, 0.8f);
         if (player.getGameMode().equals(GameMode.SURVIVAL))
-            Utils.sendMessageWithPrefix(player, "&aSuccessfully reforged your &e%s &ato &e%s &afor &e%s EXP Levels&a.".formatted(Utils.formalizedString(item.getType().toString()),
+            Utils.sendMessageWithPrefix(player, main.getTranslation("message.reforge.success_survival").formatted(Utils.formalizedString(item.getType().toString()),
                     newQuality.display, cost));
         else
-            Utils.sendMessageWithPrefix(player, "&aSuccessfully reforged your &e%s &ato &e%s&a!".formatted(Utils.formalizedString(item.getType().toString()),
+            Utils.sendMessageWithPrefix(player, main.getTranslation("message.reforge.success_creative").formatted(Utils.formalizedString(item.getType().toString()),
                     newQuality.display));
 
         event.setCancelled(true);
