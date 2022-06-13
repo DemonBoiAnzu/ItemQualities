@@ -19,7 +19,6 @@ public class Commands {
         var subCommands = new ArrayList<CommandAPICommand>() {{
             add(new CommandAPICommand("reload")
                     .withPermission(Permissions.RELOAD_PERMISSION)
-                    .withShortDescription("Reload the plugins config and item qualities.")
                     .executes((sender, args) -> {
                         main.loadConfig();
                         QualitiesManager.loadAndRegister();
@@ -29,7 +28,6 @@ public class Commands {
                     }));
             add(new CommandAPICommand("resetconfig")
                     .withPermission(Permissions.RESET_CONFIG_PERMISSION)
-                    .withShortDescription("Reset the config to the plugins default and reload the plugin.")
                     .executes((sender, args) -> {
                         main.resetConfig();
                         QualitiesManager.loadAndRegister();
@@ -37,7 +35,6 @@ public class Commands {
                     }));
             add(new CommandAPICommand("setitemquality")
                     .withPermission(Permissions.SET_ITEMS_QUALITY_PERMISSION)
-                    .withShortDescription("Set your held items quality.")
                     .withArguments(new GreedyStringArgument("quality")
                             .replaceSuggestions(ArgumentSuggestions.strings(suggestionInfo -> {
                                 String[] qualityNamespaces = new String[Registries.qualitiesRegistry.getRegistry().size() + 1];
@@ -67,7 +64,6 @@ public class Commands {
                     }));
             add(new CommandAPICommand("removeitemquality")
                     .withPermission(Permissions.REMOVE_ITEMS_QUALITY_PERMISSION)
-                    .withShortDescription("Remove the quality from your held item.")
                     .executesPlayer((player, args) -> {
                         var item = player.getInventory().getItemInMainHand();
 
