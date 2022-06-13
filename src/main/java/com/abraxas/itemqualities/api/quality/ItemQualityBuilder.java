@@ -29,32 +29,32 @@ public class ItemQualityBuilder {
         return this;
     }
 
-    public ItemQualityBuilder withNoDurabilityLossChance(int chance){
+    public ItemQualityBuilder withNoDurabilityLossChance(int chance) {
         itemQuality.noDurabilityLossChance = chance;
         return this;
     }
 
-    public ItemQualityBuilder withAdditionalDurabilityLoss(int loss, int chance){
+    public ItemQualityBuilder withAdditionalDurabilityLoss(int loss, int chance) {
         itemQuality.extraDurabilityLoss = loss;
         itemQuality.extraDurabilityLossChance = chance;
         return this;
     }
 
-    public ItemQualityBuilder withAttributeModifier(Attribute attribute, AttributeModifier modifier){
-        itemQuality.modifiers.put(attribute,modifier);
+    public ItemQualityBuilder withAttributeModifier(Attribute attribute, AttributeModifier modifier) {
+        itemQuality.modifiers.put(attribute, modifier);
         return this;
     }
 
-    public ItemQualityBuilder withAttributeModifiers(Map<Attribute,AttributeModifier> mods){
+    public ItemQualityBuilder withAttributeModifiers(Map<Attribute, AttributeModifier> mods) {
         itemQuality.modifiers.putAll(mods);
         return this;
     }
 
-    public ItemQuality build(){
+    public ItemQuality build() {
         return itemQuality;
     }
 
-    public ItemQuality buildAndRegister(){
-        return Registries.qualitiesRegistry.register(itemQuality.key,itemQuality);
+    public ItemQuality buildAndRegister() {
+        return Registries.qualitiesRegistry.register(itemQuality.key, itemQuality);
     }
 }

@@ -6,6 +6,7 @@
   "displayQualityInLore": false,
   "newUpdateMessageOnReload": true,
   "newUpdateMessageOnJoin": true,
+  "applyQualityOnCraft": true,
   "locale": "en",
   "reforgeEXPLevelCosts": {
     "WOODEN_SWORD": 1,

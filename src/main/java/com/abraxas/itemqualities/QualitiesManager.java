@@ -9,7 +9,7 @@ import com.abraxas.itemqualities.api.quality.ItemQualityBuilder;
 import com.abraxas.itemqualities.utils.Utils;
 import com.google.common.collect.Multimap;
 import net.md_5.bungee.api.chat.TranslatableComponent;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -168,8 +168,7 @@ public class QualitiesManager {
                         }
                     }
                 });
-            }
-            else {
+            } else {
                 exampleQualities.forEach(i -> {
                     var path = Path.of("%s/qualities/%s.json".formatted(main.getDataFolder(), i.key));
                     if (Files.exists(path)) {
@@ -397,7 +396,7 @@ public class QualitiesManager {
 
     public static ItemQuality getQualityById(String id) {
         for (NamespacedKey key : Registries.qualitiesRegistry.getRegistry().keySet()) {
-            if(key.getKey().equals(id)) return Registries.qualitiesRegistry.get(key);
+            if (key.getKey().equals(id)) return Registries.qualitiesRegistry.get(key);
         }
         return null;
     }

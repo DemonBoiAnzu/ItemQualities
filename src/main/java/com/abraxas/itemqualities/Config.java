@@ -15,6 +15,8 @@ public class Config {
     public boolean displayQualityInLore = false;
     public boolean newUpdateMessageOnReload = true;
     public boolean newUpdateMessageOnJoin = true;
+    public boolean applyQualityOnCraft = true;
+    public boolean reforgeStationEnabled = true;
     public Locale locale = Locale.ENGLISH;
     public Map<Material, Integer> reforgeEXPLevelCosts = new LinkedHashMap<>() {{
         put(Material.WOODEN_SWORD, 1);

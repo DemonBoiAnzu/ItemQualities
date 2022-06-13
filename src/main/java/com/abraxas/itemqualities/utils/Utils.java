@@ -3,7 +3,7 @@ package com.abraxas.itemqualities.utils;
 import com.abraxas.itemqualities.Config;
 import com.abraxas.itemqualities.ItemQualities;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
@@ -45,7 +45,7 @@ public class Utils {
         return random.nextInt(100) <= chance;
     }
 
-    public static boolean isMiningTool(ItemStack itemStack){
+    public static boolean isMiningTool(ItemStack itemStack) {
         return itemStack.getType().toString().contains("PICKAXE") ||
                 itemStack.getType().toString().contains("SHOVEL") ||
                 itemStack.getType().toString().contains("HOE") ||

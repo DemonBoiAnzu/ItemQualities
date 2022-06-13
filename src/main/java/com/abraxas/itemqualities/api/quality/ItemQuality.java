@@ -26,7 +26,7 @@ public class ItemQuality {
 
     public int tier;
 
-    public ItemQuality(NamespacedKey key, String display, int addToItemChance, int tier){
+    public ItemQuality(NamespacedKey key, String display, int addToItemChance, int tier) {
         this.key = key;
         this.display = display;
         this.addToItemChance = addToItemChance;
@@ -34,11 +34,11 @@ public class ItemQuality {
         modifiers = new HashMap<>();
     }
 
-    public static ItemQuality deserialize(String json){
-        return APIUtils.getGson().fromJson(json,ItemQuality.class);
+    public static ItemQuality deserialize(String json) {
+        return APIUtils.getGson().fromJson(json, ItemQuality.class);
     }
 
-    public static String serialize(ItemQuality item){
-        return APIUtils.getGson().toJson(item,ItemQuality.class);
+    public static String serialize(ItemQuality item) {
+        return APIUtils.getGson().toJson(item, ItemQuality.class);
     }
 }

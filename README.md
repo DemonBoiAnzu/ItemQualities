@@ -1,4 +1,5 @@
 # ItemQualities
+
 A plugin that adds Qualities to Items, along with the ability for the user to create their own.
 
 Inspired by Item Qualities in Terraria.
@@ -7,7 +8,8 @@ These qualities will modify certain aspects of an items, such as;
 
 It's durability loss, max durability and drops from using said item.
 
-View the [Wiki](https://github.com/Steel-Dev/ItemQualities/wiki) for information on Examples and how to create your own Quality.
+View the [Wiki](https://github.com/Steel-Dev/ItemQualities/wiki) for information on Examples and how to create your own
+Quality.
 
 An example of a Horrible Quality Netherite Sword:
 

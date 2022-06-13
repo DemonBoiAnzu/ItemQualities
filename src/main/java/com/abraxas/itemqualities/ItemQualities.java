@@ -27,6 +27,10 @@ public final class ItemQualities extends JavaPlugin {
     Config config;
     String configPath = "%s/config.json".formatted(getDataFolder());
 
+    public static ItemQualities getInstance() {
+        return instance;
+    }
+
     @Override
     public void onLoad() {
         CommandAPI.onLoad(new CommandAPIConfig().silentLogs(true));
@@ -59,10 +63,9 @@ public final class ItemQualities extends JavaPlugin {
 
     void loadConfig() {
         try {
-            if (!Files.exists(Path.of(getConfigPath()))) {
+            if (!Files.exists(Path.of(configPath))) {
                 saveResource("config.json", true);
-                saveDefConfig();
-                loadConfig();
+                resetConfig();
                 return;
             }
             var file = new File(configPath);
@@ -70,10 +73,6 @@ public final class ItemQualities extends JavaPlugin {
             var json = JsonParser.parseString(contents);
 
             config = Config.deserialize(String.valueOf(json));
-            if (!json.getAsJsonObject().has("reforgeEXPLevelCosts")) {
-                saveDefConfig();
-                loadConfig();
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -89,6 +88,15 @@ public final class ItemQualities extends JavaPlugin {
         Files.writeString(file.toPath(), defaultConfig);
     }
 
+    public void resetConfig() {
+        try {
+            saveDefConfig();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        loadConfig();
+    }
+
     public ResourceBundle getLangBundle() {
         return langBundle;
     }
@@ -99,13 +107,5 @@ public final class ItemQualities extends JavaPlugin {
 
     public Config getConfiguration() {
         return config;
-    }
-
-    public String getConfigPath() {
-        return configPath;
-    }
-
-    public static ItemQualities getInstance() {
-        return instance;
     }
 }

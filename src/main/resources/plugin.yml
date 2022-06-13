@@ -7,6 +7,18 @@ load: STARTUP
 authors: [ Steel_Abraxas ]
 description: A simple plugin that adds Qualities to Items. Customizable.
 permissions:
-  itemqualities.admin:
+  itemqualities.admin.reload:
     default: op
-    description: Allows use of all admin commands.
+    description: Allows use of the reload command.
+  itemqualities.admin.resetconfig:
+    default: op
+    description: Allows use of the resetconfig command.
+  itemqualities.admin.setquality:
+    default: op
+    description: Allows use of the setitemquality command.
+  itemqualities.admin.removequality:
+    default: op
+    description: Allows use of the removeitemquality command.
+  itemqualities.user.usereforge:
+    default: not op
+    description: Allows use of a reforge station.
