@@ -9,7 +9,7 @@ import com.abraxas.itemqualities.api.quality.ItemQualityBuilder;
 import com.abraxas.itemqualities.utils.Utils;
 import com.google.common.collect.Multimap;
 import net.md_5.bungee.api.chat.TranslatableComponent;
-import org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;

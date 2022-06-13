@@ -41,9 +41,16 @@
                         <configuration>
                             <outputFile>server/1.18/plugins/${project.name}-${project.version}.jar</outputFile>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <minimizeJar>true</minimizeJar>
+                            <artifactSet>
+                                <includes>
+                                    <include>dev.jorel:commandapi-shade</include>
+                                </includes>
+                            </artifactSet>
                             <relocations>
                                 <relocation>
                                     <pattern>dev.jorel.commandapi-shade</pattern>
+                                    <shadedPattern>com.abraxas.itemqualities.api.commandapi</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -58,6 +65,13 @@
             </resource>
         </resources>
     </build>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>maven-snapshots</id>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <repositories>
         <repository>
