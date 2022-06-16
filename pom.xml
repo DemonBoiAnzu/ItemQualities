@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.abraxas</groupId>
     <artifactId>itemqualities</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.4.2</version>
     <packaging>jar</packaging>
 
     <name>ItemQualities</name>
@@ -39,18 +39,23 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <outputFile>server/1.18/plugins/${project.name}-${project.version}.jar</outputFile>
+                            <outputFile>server/1.19/plugins/${project.name}-${project.version}.jar</outputFile>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <minimizeJar>true</minimizeJar>
                             <artifactSet>
                                 <includes>
                                     <include>dev.jorel:commandapi-shade</include>
+                                    <include>org.bstats</include>
                                 </includes>
                             </artifactSet>
                             <relocations>
                                 <relocation>
                                     <pattern>dev.jorel.commandapi-shade</pattern>
                                     <shadedPattern>com.abraxas.itemqualities.api.commandapi</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>com.abraxas.itemqualities.api.bstats</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -95,6 +100,13 @@
             <groupId>dev.jorel</groupId>
             <artifactId>commandapi-shade</artifactId>
             <version>8.3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.0.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

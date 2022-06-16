@@ -18,11 +18,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import static com.abraxas.itemqualities.utils.Utils.chanceOf;
 import static com.abraxas.itemqualities.utils.Utils.getConfig;
@@ -37,11 +37,17 @@ public class ItemListeners implements Listener {
             var item = inv.getItem(i);
             if (item != null) {
                 var itemMeta = item.getItemMeta();
-                var canAdd = getConfig().applyQualityOnCraft ||
-                        itemMeta == null ||
-                        !itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER);
-                if (QualitiesManager.itemCanHaveQuality(item) && !QualitiesManager.itemHasQuality(item) && canAdd)
-                    QualitiesManager.addQualityToItem(item, QualitiesManager.getRandomQuality());
+                if (itemMeta != null) {
+                    if (itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER) &&
+                            !QualitiesManager.itemCanHaveQuality(item)) {
+                        itemMeta.getPersistentDataContainer().remove(Keys.ITEM_CRAFTED_KEY);
+                        item.setItemMeta(itemMeta);
+                    }
+                    var canAdd = getConfig().applyQualityOnCraft ||
+                            !itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER);
+                    if (QualitiesManager.itemCanHaveQuality(item) && !QualitiesManager.itemHasQuality(item) && canAdd)
+                        QualitiesManager.addQualityToItem(item, QualitiesManager.getRandomQuality());
+                }
             }
         }
     }
@@ -54,11 +60,17 @@ public class ItemListeners implements Listener {
             var item = inventory.getItem(i);
             if (item != null) {
                 var itemMeta = item.getItemMeta();
-                var canAdd = getConfig().applyQualityOnCraft ||
-                        itemMeta == null ||
-                        !itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER);
-                if (QualitiesManager.itemCanHaveQuality(item) && !QualitiesManager.itemHasQuality(item) && canAdd)
-                    QualitiesManager.addQualityToItem(item, QualitiesManager.getRandomQuality());
+                if (itemMeta != null) {
+                    if (itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER) &&
+                            !QualitiesManager.itemCanHaveQuality(item)) {
+                        itemMeta.getPersistentDataContainer().remove(Keys.ITEM_CRAFTED_KEY);
+                        item.setItemMeta(itemMeta);
+                    }
+                    var canAdd = getConfig().applyQualityOnCraft ||
+                            !itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER);
+                    if (QualitiesManager.itemCanHaveQuality(item) && !QualitiesManager.itemHasQuality(item) && canAdd)
+                        QualitiesManager.addQualityToItem(item, QualitiesManager.getRandomQuality());
+                }
             }
         }
     }
@@ -90,69 +102,6 @@ public class ItemListeners implements Listener {
             QualitiesManager.addQualityToItem(item, QualitiesManager.getRandomQuality());
             event.setCurrentItem(item);
         }
-    }
-
-    @EventHandler
-    public void onPrepareCraft(PrepareItemCraftEvent event) {
-        if (event.getInventory().getResult() == null || event.getInventory().getResult().getType().equals(Material.AIR))
-            return;
-        var item = event.getInventory().getResult().clone();
-        var meta = item.getItemMeta();
-        if (QualitiesManager.itemCanHaveQuality(item)) meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.getPersistentDataContainer().set(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER, 1);
-        item.setItemMeta(meta);
-        event.getInventory().setResult(item);
-    }
-
-    @EventHandler
-    public void onCraft(CraftItemEvent event) {
-        event.getInventory().getViewers().forEach(humanEntity -> {
-            var player = (Player) humanEntity;
-            var item = event.getInventory().getResult();
-            if (item == null) return;
-            var itemMeta = item.getItemMeta();
-            itemMeta.removeItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            item.setItemMeta(itemMeta);
-            event.setCurrentItem(item);
-            if (!getConfig().applyQualityOnCraft &&
-                    itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER))
-                return;
-            var action = event.getAction();
-            if (action.equals(InventoryAction.HOTBAR_SWAP) ||
-                    action.equals(InventoryAction.SWAP_WITH_CURSOR) ||
-                    action.equals(InventoryAction.HOTBAR_MOVE_AND_READD)) {
-                if (QualitiesManager.itemCanHaveQuality(item) && !QualitiesManager.itemHasQuality(item))
-                    QualitiesManager.addQualityToItem(item, QualitiesManager.getRandomQuality());
-                event.setCancelled(true);
-                return;
-            }
-            if (event.isShiftClick()) {
-                var preInv = player.getInventory().getContents();
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        var postInv = player.getInventory().getContents();
-
-                        for (int i = 0; i < preInv.length; i++) {
-                            if (preInv[i] != postInv[i]) {
-                                if (QualitiesManager.itemCanHaveQuality(postInv[i]) && !QualitiesManager.itemHasQuality(postInv[i])) {
-                                    QualitiesManager.addQualityToItem(postInv[i], QualitiesManager.getRandomQuality());
-                                    var itemMeta = postInv[i].getItemMeta();
-                                    itemMeta.removeItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-                                    postInv[i].setItemMeta(itemMeta);
-                                    player.getInventory().setItem(i, postInv[i]);
-                                }
-                            }
-                        }
-                    }
-                }.runTaskLater(main, 5);
-                return;
-            }
-            if (QualitiesManager.itemCanHaveQuality(item) && !QualitiesManager.itemHasQuality(item)) {
-                QualitiesManager.addQualityToItem(item, QualitiesManager.getRandomQuality());
-                event.setCurrentItem(item);
-            }
-        });
     }
 
     @EventHandler
@@ -192,8 +141,10 @@ public class ItemListeners implements Listener {
             event.setDropItems(false);
             var drops = event.getBlock().getDrops(item, player);
             drops.forEach(d -> {
-                d.setAmount(d.getAmount() * 2);
-                player.getWorld().dropItemNaturally(event.getBlock().getLocation(), d);
+                if (d.getType().getMaxStackSize() > 1) {
+                    d.setAmount(d.getAmount() * 2);
+                    player.getWorld().dropItemNaturally(event.getBlock().getLocation(), d);
+                }
             });
         }
     }
@@ -207,6 +158,7 @@ public class ItemListeners implements Listener {
         var attackersItem = attackersEquipment.getItemInMainHand();
         if (attackersItem.getType().equals(Material.AIR)) return;
         if (!QualitiesManager.itemHasQuality(attackersItem)) return;
+        if (event.getEntity() instanceof Player) return;
 
         var itemsQuality = QualitiesManager.getQuality(attackersItem);
         if (itemsQuality == null) return;
@@ -217,7 +169,8 @@ public class ItemListeners implements Listener {
 
         if (itemsQuality.doubleDropsChance > 0 && chanceOf(itemsQuality.doubleDropsChance)) {
             event.getDrops().forEach(d -> {
-                d.setAmount(d.getAmount() * 2);
+                if (d.getType().getMaxStackSize() > 1)
+                    d.setAmount(d.getAmount() * 2);
             });
         }
     }

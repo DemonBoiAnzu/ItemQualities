@@ -202,6 +202,7 @@ public class QualitiesManager {
                 }
             });
             Utils.log(main.getTranslation("message.plugin.registration_complete"));
+            Utils.log(main.getTranslation("message.plugin.custom_quality_reminder").formatted("https://github.com/Steel-Dev/ItemQualities/wiki/Creating"));
         } catch (IOException e) {
             Utils.log(main.getTranslation("message.plugin.registration_error"));
             e.printStackTrace();
