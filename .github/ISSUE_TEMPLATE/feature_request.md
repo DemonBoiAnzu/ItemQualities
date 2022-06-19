@@ -1,14 +1,17 @@
 ---
-name: Feature request about: Suggest an idea for this project title: ''
-labels: feature-request assignees: ''
+name: Feature request
+about: Suggest an idea for this project
+title: ''
+labels: feature-request
+assignees: ''
 
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+**Your idea - Please CLEARLY describe your feature in detail.**
+replace this with your text.
 
-**Describe the feature you'd like**
-A clear and concise description of what you want to happen.
+**Examples - Please list/show any examples of your idea.**
+replace this with your text/media.
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+**Additional context - Please describe any additional information CLEARLY here.**
+replace this with your text.
