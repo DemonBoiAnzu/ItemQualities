@@ -9,11 +9,12 @@ import com.abraxas.itemqualities.api.quality.ItemQualityBuilder;
 import com.abraxas.itemqualities.utils.Utils;
 import com.google.common.collect.Multimap;
 import net.md_5.bungee.api.chat.TranslatableComponent;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -212,6 +213,7 @@ public class QualitiesManager {
     public static ItemStack addQualityToItem(ItemStack itemStack, ItemQuality itemQuality) {
         var itemMeta = itemStack.getItemMeta();
         if (itemMeta == null || !itemCanHaveQuality(itemStack) || itemHasQuality(itemStack)) return itemStack;
+        if (itemMeta.getItemFlags().contains(ItemFlag.HIDE_ATTRIBUTES)) return itemStack;
 
         itemMeta.getPersistentDataContainer().set(Keys.ITEM_QUALITY_KEY, PersistentDataType.STRING, itemQuality.key.getKey());
 

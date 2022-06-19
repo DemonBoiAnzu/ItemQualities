@@ -1,11 +1,16 @@
 package com.abraxas.itemqualities;
 
+import com.abraxas.itemqualities.api.DurabilityManager;
 import com.abraxas.itemqualities.api.Registries;
 import com.abraxas.itemqualities.utils.Permissions;
 import com.abraxas.itemqualities.utils.UpdateChecker;
+import com.abraxas.itemqualities.utils.Utils;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
+import net.md_5.bungee.api.chat.TranslatableComponent;
+import org.bukkit.Material;
+import org.bukkit.inventory.meta.Damageable;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,6 +38,23 @@ public class Commands {
                         QualitiesManager.loadAndRegister();
                         sendMessageWithPrefix(sender, main.getTranslation("message.commands.reloaded_default_config"));
                     }));
+            add(new CommandAPICommand("repairitem")
+                    .withPermission(Permissions.REPAIR_ITEM_PERMISSION)
+                    .executesPlayer((player, args) -> {
+                        var item = player.getInventory().getItemInMainHand();
+                        if (item.getType().equals(Material.AIR)) {
+                            Utils.sendMessageWithPrefix(player, main.getTranslation("message.commands.must_hold_item"));
+                            return;
+                        }
+                        var itemMeta = item.getItemMeta();
+                        if (!(itemMeta instanceof Damageable)) {
+                            Utils.sendMessageWithPrefix(player, main.getTranslation("message.commands.item_cant_be_repaired"));
+                            return;
+                        }
+                        String itemName = new TranslatableComponent("item.minecraft.%s".formatted(item.getType().toString().toLowerCase())).toPlainText();
+                        DurabilityManager.repairItem(item);
+                        Utils.sendMessageWithPrefix(player, main.getTranslation("message.commands.item_repaired").formatted(itemName));
+                    }));
             add(new CommandAPICommand("setitemquality")
                     .withPermission(Permissions.SET_ITEMS_QUALITY_PERMISSION)
                     .withArguments(new GreedyStringArgument("quality")
@@ -47,6 +69,10 @@ public class Commands {
                             })))
                     .executesPlayer((player, args) -> {
                         var item = player.getInventory().getItemInMainHand();
+                        if (item.getType().equals(Material.AIR)) {
+                            Utils.sendMessageWithPrefix(player, main.getTranslation("message.commands.must_hold_item"));
+                            return;
+                        }
                         var qualArgString = (String) args[0];
                         var quality = QualitiesManager.getRandomQuality(QualitiesManager.getQuality(item));
                         var qualArg = qualArgString.split(":");
@@ -66,7 +92,10 @@ public class Commands {
                     .withPermission(Permissions.REMOVE_ITEMS_QUALITY_PERMISSION)
                     .executesPlayer((player, args) -> {
                         var item = player.getInventory().getItemInMainHand();
-
+                        if (item.getType().equals(Material.AIR)) {
+                            Utils.sendMessageWithPrefix(player, main.getTranslation("message.commands.must_hold_item"));
+                            return;
+                        }
                         if (!QualitiesManager.itemCanHaveQuality(item)) {
                             sendMessageWithPrefix(player, main.getTranslation("message.commands.item_cant_remove_quality"));
                             return;

@@ -13,26 +13,29 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class DurabilityManager {
     public static int getItemCustomMaxDurability(ItemStack itemStack) {
-        ItemMeta meta = itemStack.getItemMeta();
+        var meta = itemStack.getItemMeta();
         if (meta == null) return 0;
 
         return meta.getPersistentDataContainer().getOrDefault(Keys.MAX_ITEM_DURABILITY_KEY, PersistentDataType.INTEGER, 0);
     }
 
     public static int getItemCustomDamage(ItemStack itemStack) {
-        ItemMeta meta = itemStack.getItemMeta();
+        var meta = itemStack.getItemMeta();
         if (meta == null) return 0;
 
         return meta.getPersistentDataContainer().getOrDefault(Keys.ITEM_DURABILITY_KEY, PersistentDataType.INTEGER, 0);
     }
 
     public static int getItemMaxDurability(ItemStack itemStack) {
+        if (getItemCustomMaxDurability(itemStack) > 0) return getItemCustomMaxDurability(itemStack);
         return itemStack.getType().getMaxDurability();
     }
 
     public static int getItemDamage(ItemStack itemStack) {
-        Damageable damageable = (Damageable) itemStack.getItemMeta();
-        if (damageable == null) return 0;
+        if (getItemCustomDamage(itemStack) > 0) return getItemCustomDamage(itemStack);
+        var itemMeta = itemStack.getItemMeta();
+        if (itemMeta == null) return 0;
+        if (!(itemMeta instanceof Damageable damageable)) return 0;
         return damageable.getDamage();
     }
 
@@ -53,7 +56,7 @@ public class DurabilityManager {
                 return;
             }
             damageable.setDamage(curDur);
-            itemStack.setItemMeta((ItemMeta) damageable);
+            itemStack.setItemMeta(damageable);
             return;
         }
 
@@ -63,9 +66,9 @@ public class DurabilityManager {
 
         damageable.setDamage((int) newDur);
 
-        ((ItemMeta) damageable).getPersistentDataContainer().set(Keys.ITEM_DURABILITY_KEY, PersistentDataType.INTEGER, customDur);
+        damageable.getPersistentDataContainer().set(Keys.ITEM_DURABILITY_KEY, PersistentDataType.INTEGER, customDur);
 
-        itemStack.setItemMeta((ItemMeta) damageable);
+        itemStack.setItemMeta(damageable);
         if (customDur >= customMaxDur)
             breakItem(player, itemStack);
     }
@@ -75,5 +78,31 @@ public class DurabilityManager {
         Bukkit.getPluginManager().callEvent(playerItemBreakEvent);
         itemStack.setAmount(0);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, SoundCategory.PLAYERS, 1, 1);
+    }
+
+    public static void repairItem(ItemStack itemStack) {
+        var itemMeta = itemStack.getItemMeta();
+        if (itemMeta == null) return;
+        if (!(itemMeta instanceof Damageable damageable)) return;
+        int customMaxDur = getItemCustomMaxDurability(itemStack);
+        int customDur = getItemCustomDamage(itemStack);
+        if (customMaxDur <= 0) repairItem(itemStack, damageable.getDamage());
+        else repairItem(itemStack, customDur);
+    }
+
+    public static void repairItem(ItemStack itemStack, int amount) {
+        var itemMeta = itemStack.getItemMeta();
+        if (itemMeta == null) return;
+        if (!(itemMeta instanceof Damageable damageable)) return;
+        int curDur = getItemDamage(itemStack);
+        int customMaxDur = getItemCustomMaxDurability(itemStack);
+        int customDur = getItemCustomDamage(itemStack);
+        if (customMaxDur >= 0) {
+            damageable.setDamage(curDur - amount);
+            itemStack.setItemMeta(damageable);
+            return;
+        }
+        damageable.getPersistentDataContainer().set(Keys.ITEM_DURABILITY_KEY, PersistentDataType.INTEGER, customDur - amount);
+        itemStack.setItemMeta(damageable);
     }
 }

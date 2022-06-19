@@ -19,6 +19,9 @@ permissions:
   itemqualities.admin.removequality:
     default: op
     description: Allows use of the removeitemquality command.
+  itemqualities.admin.repairitem:
+    default: op
+    description: Allows use of the repairitem command.
   itemqualities.user.usereforge:
     default: not op
     description: Allows use of a reforge station.

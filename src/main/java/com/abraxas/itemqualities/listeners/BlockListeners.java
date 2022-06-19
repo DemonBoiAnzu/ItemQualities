@@ -2,6 +2,7 @@ package com.abraxas.itemqualities.listeners;
 
 import com.abraxas.itemqualities.ItemQualities;
 import com.abraxas.itemqualities.QualitiesManager;
+import com.abraxas.itemqualities.api.DurabilityManager;
 import com.abraxas.itemqualities.api.Keys;
 import com.abraxas.itemqualities.utils.Permissions;
 import com.abraxas.itemqualities.utils.Utils;
@@ -26,6 +27,22 @@ import static com.abraxas.itemqualities.utils.Utils.sendMessageWithPrefix;
 
 public class BlockListeners implements Listener {
     ItemQualities main = ItemQualities.getInstance();
+
+    @EventHandler
+    public void repairItemAnvil(PrepareAnvilEvent event) {
+        var slot0 = event.getInventory().getItem(0);
+        var slot1 = event.getResult();
+        if (slot1 == null || slot0 == null) return;
+        if (slot0.getType() == slot1.getType()) {
+            var slot0Dam = DurabilityManager.getItemDamage(slot0);
+            var slot1Dam = DurabilityManager.getItemDamage(slot1);
+
+            if (slot1Dam < slot0Dam) {
+                var difference = slot0Dam - slot1Dam;
+                DurabilityManager.repairItem(slot1, difference);
+            }
+        }
+    }
 
     @EventHandler
     public void onPrepareSmithing(PrepareSmithingEvent event) {
@@ -178,7 +195,7 @@ public class BlockListeners implements Listener {
         if (!block.getType().equals(Material.ANVIL)) return;
         if (!getConfig().reforgeStationEnabled) return;
 
-        if (!player.hasPermission(Permissions.USE_REFORGE_PERMISSION)) {
+        if (!Utils.canUseReforge(player)) {
             sendMessageWithPrefix(player, main.getTranslation("message.plugin.no_permission").formatted(Permissions.USE_REFORGE_PERMISSION));
             return;
         }

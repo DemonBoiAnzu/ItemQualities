@@ -22,6 +22,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
+import org.bukkit.event.player.PlayerItemMendEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import static com.abraxas.itemqualities.utils.Utils.chanceOf;
@@ -29,6 +30,12 @@ import static com.abraxas.itemqualities.utils.Utils.getConfig;
 
 public class ItemListeners implements Listener {
     ItemQualities main = ItemQualities.getInstance();
+
+    @EventHandler
+    public void repairItemMend(PlayerItemMendEvent event) {
+        if (event.isCancelled()) return;
+        DurabilityManager.repairItem(event.getItem(), event.getRepairAmount());
+    }
 
     @EventHandler
     public void onOpenInventory(InventoryOpenEvent event) {

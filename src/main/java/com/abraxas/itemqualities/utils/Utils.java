@@ -3,9 +3,11 @@ package com.abraxas.itemqualities.utils;
 import com.abraxas.itemqualities.Config;
 import com.abraxas.itemqualities.ItemQualities;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.text.WordUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
@@ -39,6 +41,11 @@ public class Utils {
 
     public static void registerEvents(Listener listener) {
         ItemQualities.getInstance().getServer().getPluginManager().registerEvents(listener, ItemQualities.getInstance());
+    }
+
+    public static boolean canUseReforge(Player player) {
+        var perm = Bukkit.getPluginManager().getPermission(Permissions.USE_REFORGE_PERMISSION);
+        return player.isOp() || (perm != null && player.hasPermission(perm));
     }
 
     public static boolean chanceOf(int chance) {

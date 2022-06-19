@@ -6,7 +6,7 @@
 
     <groupId>com.abraxas</groupId>
     <artifactId>itemqualities</artifactId>
-    <version>1.0.4.2</version>
+    <version>1.0.5</version>
     <packaging>jar</packaging>
 
     <name>ItemQualities</name>
@@ -99,14 +99,23 @@
         <dependency>
             <groupId>dev.jorel</groupId>
             <artifactId>commandapi-shade</artifactId>
-            <version>8.3.1</version>
+            <version>8.4.0</version>
         </dependency>
-
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>3.0.0</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.9.0</version>
         </dependency>
     </dependencies>
 </project>
