@@ -4,12 +4,15 @@ import com.abraxas.itemqualities.ItemQualities;
 import com.abraxas.itemqualities.QualitiesManager;
 import com.abraxas.itemqualities.api.DurabilityManager;
 import com.abraxas.itemqualities.api.Keys;
+import com.abraxas.itemqualities.api.Registries;
+import com.abraxas.itemqualities.api.quality.ItemQuality;
 import com.abraxas.itemqualities.utils.Permissions;
 import com.abraxas.itemqualities.utils.Utils;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,6 +24,9 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.abraxas.itemqualities.utils.Utils.getConfig;
 import static com.abraxas.itemqualities.utils.Utils.sendMessageWithPrefix;
@@ -42,6 +48,16 @@ public class BlockListeners implements Listener {
                 DurabilityManager.repairItem(slot1, difference);
             }
         }
+    }
+
+    @EventHandler
+    public void normalPrepareAnvil(PrepareAnvilEvent event) {
+        var slot1 = event.getResult();
+        if (slot1 == null) return;
+        var itemsQuality = QualitiesManager.getQuality(slot1);
+        QualitiesManager.removeQualityFromItem(slot1);
+        QualitiesManager.addQualityToItem(slot1, (itemsQuality != null) ? itemsQuality : QualitiesManager.getRandomQuality());
+        event.setResult(slot1);
     }
 
     @EventHandler
@@ -191,9 +207,18 @@ public class BlockListeners implements Listener {
                 hand != EquipmentSlot.HAND ||
                 block == null ||
                 !player.isSneaking()) return;
-
-        if (!block.getType().equals(Material.ANVIL)) return;
+        if (!block.getType().equals(Material.ANVIL) &&
+                !block.getType().equals(Material.CHIPPED_ANVIL) &&
+                !block.getType().equals(Material.DAMAGED_ANVIL)) return;
         if (!getConfig().reforgeStationEnabled) return;
+
+        List<ItemQuality> qualities = new ArrayList<>((block.getType().equals(Material.ANVIL)) ?
+                Registries.qualitiesRegistry.getRegistry().values().stream().toList() :
+                (block.getType().equals(Material.CHIPPED_ANVIL)) ?
+                        Registries.qualitiesRegistry.getRegistry().values().stream().filter(q -> q.tier <= 5).toList() :
+                        (block.getType().equals(Material.DAMAGED_ANVIL)) ?
+                                Registries.qualitiesRegistry.getRegistry().values().stream().filter(q -> q.tier <= 4).toList() :
+                                Registries.qualitiesRegistry.getRegistry().values().stream().toList());
 
         if (!Utils.canUseReforge(player)) {
             sendMessageWithPrefix(player, main.getTranslation("message.plugin.no_permission").formatted(Permissions.USE_REFORGE_PERMISSION));
@@ -210,18 +235,31 @@ public class BlockListeners implements Listener {
             sendMessageWithPrefix(player, main.getTranslation("message.reforge.cant_afford").formatted(cost));
             return;
         }
-
-        var newQuality = QualitiesManager.getRandomQuality(QualitiesManager.getQuality(item));
+        qualities.remove(QualitiesManager.getQuality(item));
+        var newQuality = qualities.get(Utils.getRandom().nextInt(qualities.size()));
         QualitiesManager.removeQualityFromItem(item);
         QualitiesManager.addQualityToItem(item, newQuality);
         if (player.getGameMode().equals(GameMode.SURVIVAL)) player.setLevel(player.getLevel() - cost);
-        player.getWorld().playSound(block.getLocation(), Sound.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1f, 0.8f);
         if (player.getGameMode().equals(GameMode.SURVIVAL))
             sendMessageWithPrefix(player, main.getTranslation("message.reforge.success_survival").formatted(Utils.formalizedString(item.getType().toString()),
                     newQuality.display, cost));
         else
             sendMessageWithPrefix(player, main.getTranslation("message.reforge.success_creative").formatted(Utils.formalizedString(item.getType().toString()),
                     newQuality.display));
+
+        if (Utils.chanceOf(6) && player.getGameMode().equals(GameMode.SURVIVAL) && getConfig().damageAnvilOnReforge) {
+            Directional dirBlockData = (Directional) block.getBlockData();
+            var initFacing = dirBlockData.getFacing();
+
+            player.playSound(block.getLocation(), Sound.BLOCK_ANVIL_DESTROY, SoundCategory.BLOCKS, 1f, 1f);
+            if (block.getType().equals(Material.ANVIL)) block.setType(Material.CHIPPED_ANVIL);
+            else if (block.getType().equals(Material.CHIPPED_ANVIL)) block.setType(Material.DAMAGED_ANVIL);
+            else if (block.getType().equals(Material.DAMAGED_ANVIL)) block.setType(Material.AIR);
+
+            dirBlockData = (Directional) block.getBlockData(); // Update the data.
+            dirBlockData.setFacing(initFacing);
+            block.setBlockData(dirBlockData);
+        } else player.getWorld().playSound(block.getLocation(), Sound.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1f, 1f);
 
         event.setCancelled(true);
     }

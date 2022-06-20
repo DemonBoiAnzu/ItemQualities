@@ -7,6 +7,8 @@
   "newUpdateMessageOnReload": true,
   "newUpdateMessageOnJoin": true,
   "applyQualityOnCraft": true,
+  "reforgeStationEnabled": true,
+  "damageAnvilOnReforge": true,
   "locale": "en",
   "reforgeEXPLevelCosts": {
     "WOODEN_SWORD": 1,

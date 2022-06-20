@@ -70,7 +70,8 @@ public class Utils {
 
     public static boolean isMeleeWeapon(ItemStack itemStack) {
         return itemStack.getType().toString().contains("SWORD") ||
-                itemStack.getType().toString().contains("_AXE");
+                itemStack.getType().toString().contains("_AXE") ||
+                itemStack.getType().toString().contains("TRIDENT");
     }
 
     public static boolean isProjectileLauncher(ItemStack itemStack) {

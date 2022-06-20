@@ -13,6 +13,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -57,7 +58,7 @@ public class QualitiesManager {
                         -0.1,
                         AttributeModifier.Operation.ADD_NUMBER))
                 .build());
-        add(new ItemQualityBuilder(new NamespacedKey(main, "good"), "&2Good", 55, 1)
+        add(new ItemQualityBuilder(new NamespacedKey(main, "good"), "&2Good", 55, 5)
                 .withNoDropChance(40)
                 .withAdditionalDurabilityLoss(1, 90)
                 .withMaxDurabilityMod(-3)
@@ -80,7 +81,7 @@ public class QualitiesManager {
                         -0.05,
                         AttributeModifier.Operation.ADD_NUMBER))
                 .build());
-        add(new ItemQualityBuilder(new NamespacedKey(main, "great"), "&eGreat", 55, 2)
+        add(new ItemQualityBuilder(new NamespacedKey(main, "great"), "&eGreat", 55, 6)
                 .withNoDropChance(20)
                 .withAdditionalDurabilityLoss(1, 40)
                 .withMaxDurabilityMod(-3)
@@ -99,7 +100,7 @@ public class QualitiesManager {
                         -1,
                         AttributeModifier.Operation.ADD_NUMBER))
                 .build());
-        add(new ItemQualityBuilder(new NamespacedKey(main, "perfect"), "&aPerfect", 45, 3)
+        add(new ItemQualityBuilder(new NamespacedKey(main, "perfect"), "&aPerfect", 45, 8)
                 .build());
         add(new ItemQualityBuilder(new NamespacedKey(main, "legendary"), "&6Legendary", 4, 9)
                 .withNoDurabilityLossChance(60)
@@ -286,28 +287,39 @@ public class QualitiesManager {
 
                 EquipmentSlot slot = attributeModifier.getSlot();
                 if (isArmor(itemStack)) {
-                    if (attribute == Attribute.GENERIC_ARMOR || attribute == Attribute.GENERIC_ARMOR_TOUGHNESS || attribute == Attribute.GENERIC_KNOCKBACK_RESISTANCE) {
-                        var itemSt = itemStack.getType().toString();
-                        if (itemSt.contains("HELMET")) slot = HEAD;
-                        else if (itemSt.contains("CHESTPLATE") || itemSt.contains("TUNIC") || itemSt.contains("ELYTRA"))
-                            slot = CHEST;
-                        else if (itemSt.contains("LEGGINGS")) slot = LEGS;
-                        else if (itemSt.contains("BOOTS")) slot = FEET;
+                    var itemSt = itemStack.getType().toString();
+                    if (itemSt.contains("HELMET")) slot = HEAD;
+                    else if (itemSt.contains("CHESTPLATE") || itemSt.contains("TUNIC") || itemSt.contains("ELYTRA"))
+                        slot = CHEST;
+                    else if (itemSt.contains("LEGGINGS")) slot = LEGS;
+                    else if (itemSt.contains("BOOTS")) slot = FEET;
 
-                        var defForArmorSlot = defAttributes.get(slot);
-                        for (Attribute attr : defForArmorSlot.keys()) {
-                            if (attr.equals(attribute)) {
-                                var curDefForArmorSlot = defForArmorSlot.get(attr).stream().findFirst();
-                                if (curDefForArmorSlot.isPresent()) {
-                                    var defaultMod = curDefForArmorSlot.get();
-                                    initialValue = defaultMod.getAmount();
-                                }
+                    var defForArmorSlot = defAttributes.get(slot);
+                    for (Attribute attr : defForArmorSlot.keys()) {
+                        if (attr.equals(attribute)) {
+                            var curDefForArmorSlot = defForArmorSlot.get(attr).stream().findFirst();
+                            if (curDefForArmorSlot.isPresent()) {
+                                var defaultMod = curDefForArmorSlot.get();
+                                initialValue = defaultMod.getAmount();
                             }
                         }
                     }
-                }
-                var newAmount = initialValue + attributeModifier.getAmount();
+                    /*if (attribute == Attribute.GENERIC_ARMOR || attribute == Attribute.GENERIC_ARMOR_TOUGHNESS || attribute == Attribute.GENERIC_KNOCKBACK_RESISTANCE) {
 
+                    }*/
+                }
+                if (slot == null) {
+                    //if(isMiningTool(itemStack) || isMeleeWeapon(itemStack) || isProjectileLauncher(itemStack))
+                    slot = HAND;
+                }
+
+                var sharpnessLevel = itemStack.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
+
+                var newAmount = initialValue + attributeModifier.getAmount() + ((sharpnessLevel == 1) ? 1 :
+                        (sharpnessLevel == 2) ? 1.5d :
+                                (sharpnessLevel == 3) ? 2 :
+                                        (sharpnessLevel == 4) ? 2.5d :
+                                                (sharpnessLevel == 5) ? 3 : 0);
                 var newMod = new AttributeModifier(UUID.randomUUID(),
                         attributeModifier.getName(),
                         newAmount,

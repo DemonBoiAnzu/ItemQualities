@@ -14,6 +14,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
@@ -24,6 +25,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerItemMendEvent;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import static com.abraxas.itemqualities.utils.Utils.chanceOf;
 import static com.abraxas.itemqualities.utils.Utils.getConfig;
@@ -35,6 +37,20 @@ public class ItemListeners implements Listener {
     public void repairItemMend(PlayerItemMendEvent event) {
         if (event.isCancelled()) return;
         DurabilityManager.repairItem(event.getItem(), event.getRepairAmount());
+    }
+
+    @EventHandler
+    public void enchantItem(EnchantItemEvent event) {
+        var item = event.getItem();
+        var itemsQuality = QualitiesManager.getQuality(item);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                QualitiesManager.removeQualityFromItem(item);
+                QualitiesManager.addQualityToItem(item, (itemsQuality != null) ? itemsQuality : QualitiesManager.getRandomQuality());
+            }
+        }.runTaskLater(main, 3);
     }
 
     @EventHandler
