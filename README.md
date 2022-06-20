@@ -1,24 +1,27 @@
 # ItemQualities
 
-A plugin that adds Qualities to Items, along with the ability for the user to create their own.
+ItemQualities is a Minecraft Plugin for 1.18+ Servers that adds a special functionality to Damagable items.
 
-Inspired by Item Qualities in Terraria.
+Each item, when crafted, picked up or looted will have a random Quality assigned to it.
 
-These qualities will modify certain aspects of an items, such as;
+The plugin is customizable, many configuration options and, most importantly, the ability to create your own qualities!
 
-It's durability loss, max durability and drops from using said item.
+### Wiki
+The Wiki is home to information about the plugin, you can check it out [here](https://github.com/Steel-Dev/ItemQualities/wiki).
 
-View the [Wiki](https://github.com/Steel-Dev/ItemQualities/wiki) for information on Examples and how to create your own
-Quality.
+Pages for the Wiki can be viewed on the right hand side.
 
-An example of a Horrible Quality Netherite Sword:
+### Discussions
+The Discussions are for talking with the community and sharing ideas. Along with sharing ItemQualities you've created yourself!
 
-![image](https://user-images.githubusercontent.com/12509016/171086033-31807d13-05b8-405b-a888-2062d9a3c416.png)
+You can check it out [here](https://github.com/Steel-Dev/ItemQualities/discussions).
 
-Future Plans:
+### Issues
+If you have any problems, please create an issue [here](https://github.com/Steel-Dev/ItemQualities/issues). Please use the format, and be clear.
 
--An alternative way of creating Qualities via commands or a gui. (maybe an external generator?)
+### Screenshots
+![javaw_WwWn9ydE6f](https://user-images.githubusercontent.com/12509016/174690417-1ca9ef5b-dd1d-4701-93d4-29f3b25ec05b.png)
 
--More values a Quality can modify on an item
+![javaw_FdvxP38Ov1](https://user-images.githubusercontent.com/12509016/174690424-ff19c0ab-4822-4d40-916d-31d2d71758d4.png)
 
-Suggest more.
+![javaw_VtSFARXCMz](https://user-images.githubusercontent.com/12509016/174690426-695f7702-1c33-48ff-b988-ab91390c4680.png)
