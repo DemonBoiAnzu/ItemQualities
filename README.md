@@ -18,6 +18,9 @@ The Discussions are for talking with the community and sharing ideas. Along with
 
 You can check it out [here](https://github.com/Steel-Dev/ItemQualities/discussions).
 
+### Download
+You can download the plugin [here](https://www.spigotmc.org/resources/item-qualities.102350/).
+
 ### Issues
 If you have any problems, please create an issue [here](https://github.com/Steel-Dev/ItemQualities/issues). Please use the format, and be clear.
 
