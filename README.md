@@ -1,6 +1,8 @@
 # ItemQualities
 
-ItemQualities is a Minecraft Plugin for 1.18+ Servers that adds a special functionality to Damagable items.
+ItemQualities is a Minecraft Plugin for 1.18+ Servers that adds a special functionality to Damagable items. 
+
+Inspired by the Quality Tools mod and the Item Quality system in Terraria.
 
 Each item, when crafted, picked up or looted will have a random Quality assigned to it.
 
