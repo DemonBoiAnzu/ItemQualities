@@ -6,7 +6,7 @@
 
     <groupId>com.abraxas</groupId>
     <artifactId>itemqualities</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
     <packaging>jar</packaging>
 
     <name>ItemQualities</name>
@@ -46,12 +46,17 @@
                                 <includes>
                                     <include>dev.jorel:commandapi-shade</include>
                                     <include>org.bstats</include>
+                                    <include>fr.minuskube.inv</include>
                                 </includes>
                             </artifactSet>
                             <relocations>
                                 <relocation>
                                     <pattern>dev.jorel.commandapi-shade</pattern>
                                     <shadedPattern>com.abraxas.itemqualities.api.commandapi</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>fr.minuskube.inv</pattern>
+                                    <shadedPattern>com.abraxas.itemqualities.api.inv</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.bstats</pattern>
@@ -100,6 +105,11 @@
             <groupId>dev.jorel</groupId>
             <artifactId>commandapi-shade</artifactId>
             <version>8.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>fr.minuskube.inv</groupId>
+            <artifactId>smart-invs</artifactId>
+            <version>1.2.7</version>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>

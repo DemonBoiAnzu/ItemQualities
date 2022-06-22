@@ -9,11 +9,14 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.bukkit.inventory.EquipmentSlot.*;
 
 public class Utils {
     static Random random = new Random();
@@ -52,6 +55,14 @@ public class Utils {
         return random.nextInt(100) <= chance;
     }
 
+    public static EquipmentSlot getItemsMainSlot(ItemStack itemStack) {
+        return (isHelmet(itemStack)) ? HEAD :
+                (isChest(itemStack)) ? CHEST :
+                        (isLegs(itemStack)) ? LEGS :
+                                (isBoots(itemStack)) ? FEET :
+                                        (isOffhandItem(itemStack)) ? OFF_HAND : HAND;
+    }
+
     public static boolean isMiningTool(ItemStack itemStack) {
         return itemStack.getType().toString().contains("PICKAXE") ||
                 itemStack.getType().toString().contains("SHOVEL") ||
@@ -66,6 +77,28 @@ public class Utils {
                 itemStack.getType().toString().contains("ELYTRA") ||
                 itemStack.getType().toString().contains("LEGGINGS") ||
                 itemStack.getType().toString().contains("BOOTS");
+    }
+
+    public static boolean isHelmet(ItemStack itemStack) {
+        return itemStack.getType().toString().contains("HELMET");
+    }
+
+    public static boolean isChest(ItemStack itemStack) {
+        return itemStack.getType().toString().contains("CHESTPLATE") ||
+                itemStack.getType().toString().contains("TUNIC") ||
+                itemStack.getType().toString().contains("ELYTRA");
+    }
+
+    public static boolean isLegs(ItemStack itemStack) {
+        return itemStack.getType().toString().contains("LEGGINGS");
+    }
+
+    public static boolean isBoots(ItemStack itemStack) {
+        return itemStack.getType().toString().contains("BOOTS");
+    }
+
+    public static boolean isOffhandItem(ItemStack itemStack) {
+        return itemStack.getType().equals(Material.SHIELD);
     }
 
     public static boolean isMeleeWeapon(ItemStack itemStack) {

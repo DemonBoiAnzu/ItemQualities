@@ -42,13 +42,10 @@ public class ItemListeners implements Listener {
     @EventHandler
     public void enchantItem(EnchantItemEvent event) {
         var item = event.getItem();
-        var itemsQuality = QualitiesManager.getQuality(item);
-
         new BukkitRunnable() {
             @Override
             public void run() {
-                QualitiesManager.removeQualityFromItem(item);
-                QualitiesManager.addQualityToItem(item, (itemsQuality != null) ? itemsQuality : QualitiesManager.getRandomQuality());
+                QualitiesManager.refreshItem(item);
             }
         }.runTaskLater(main, 3);
     }
@@ -68,6 +65,7 @@ public class ItemListeners implements Listener {
                     }
                     var canAdd = getConfig().applyQualityOnCraft ||
                             !itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER);
+                    if (QualitiesManager.itemHasQuality(item) && canAdd) QualitiesManager.refreshItem(item);
                     if (QualitiesManager.itemCanHaveQuality(item) && !QualitiesManager.itemHasQuality(item) && canAdd)
                         QualitiesManager.addQualityToItem(item, QualitiesManager.getRandomQuality());
                 }
@@ -121,6 +119,10 @@ public class ItemListeners implements Listener {
         if (!getConfig().applyQualityOnCraft &&
                 itemMeta != null &&
                 itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER)) return;
+        if (QualitiesManager.itemHasQuality(item)) {
+            QualitiesManager.refreshItem(item);
+            event.setCurrentItem(item);
+        }
         if (QualitiesManager.itemCanHaveQuality(item) && !QualitiesManager.itemHasQuality(item)) {
             QualitiesManager.addQualityToItem(item, QualitiesManager.getRandomQuality());
             event.setCurrentItem(item);
@@ -143,6 +145,8 @@ public class ItemListeners implements Listener {
                 damage += Math.abs(itemsQuality.extraDurabilityLoss);
         }
         DurabilityManager.damageItem(player, item, damage);
+        if (QualitiesManager.itemHasQuality(item))
+            QualitiesManager.refreshItem(item);
     }
 
     @EventHandler

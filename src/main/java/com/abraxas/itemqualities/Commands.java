@@ -2,6 +2,7 @@ package com.abraxas.itemqualities;
 
 import com.abraxas.itemqualities.api.DurabilityManager;
 import com.abraxas.itemqualities.api.Registries;
+import com.abraxas.itemqualities.inventories.Inventories;
 import com.abraxas.itemqualities.utils.Permissions;
 import com.abraxas.itemqualities.utils.UpdateChecker;
 import com.abraxas.itemqualities.utils.Utils;
@@ -109,6 +110,15 @@ public class Commands {
 
                         QualitiesManager.removeQualityFromItem(item);
                         sendMessageWithPrefix(player, main.getTranslation("message.commands.quality_removed").formatted(itemsQuality.display));
+                    }));
+            add(new CommandAPICommand("managequalities")
+                    .withPermission(Permissions.MANAGE_QUALITIES_PERMISSION)
+                    .executesPlayer((player, args) -> {
+                        if (Registries.qualitiesRegistry.getRegistry().size() < 1) {
+                            sendMessageWithPrefix(player, main.getTranslation("message.plugin.no_qualities_registered"));
+                            return;
+                        }
+                        Inventories.QUALITY_MANAGER_INVENTORY.open(player, 0);
                     }));
         }};
 

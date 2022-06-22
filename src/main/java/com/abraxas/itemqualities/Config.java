@@ -3,9 +3,7 @@ package com.abraxas.itemqualities;
 import com.abraxas.itemqualities.api.APIUtils;
 import org.bukkit.Material;
 
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class Config {
     public boolean debugMode = true;
@@ -18,7 +16,12 @@ public class Config {
     public boolean applyQualityOnCraft = true;
     public boolean reforgeStationEnabled = true;
     public boolean damageAnvilOnReforge = true;
+    public boolean reforgeTierDependsOnAnvilDamage = true;
     public Locale locale = Locale.ENGLISH;
+    public List<Material> itemBlacklist = new ArrayList<>() {{
+        add(Material.CARROT_ON_A_STICK);
+        add(Material.WARPED_FUNGUS_ON_A_STICK);
+    }};
     public Map<Material, Integer> reforgeEXPLevelCosts = new LinkedHashMap<>() {{
         put(Material.WOODEN_SWORD, 1);
         put(Material.WOODEN_AXE, 1);
@@ -29,6 +32,15 @@ public class Config {
         put(Material.LEATHER_CHESTPLATE, 1);
         put(Material.LEATHER_LEGGINGS, 1);
         put(Material.LEATHER_BOOTS, 1);
+
+        put(Material.FLINT_AND_STEEL, 1);
+        put(Material.FIRE_CHARGE, 1);
+        put(Material.SHEARS, 1);
+        put(Material.BOW, 4);
+        put(Material.CROSSBOW, 6);
+        put(Material.TRIDENT, 13);
+        put(Material.ELYTRA, 20);
+        put(Material.FISHING_ROD, 2);
 
         put(Material.STONE_SWORD, 3);
         put(Material.STONE_AXE, 3);

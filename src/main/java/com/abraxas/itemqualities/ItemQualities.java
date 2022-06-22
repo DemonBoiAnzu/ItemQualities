@@ -8,6 +8,7 @@ import com.abraxas.itemqualities.utils.Utils;
 import com.google.gson.JsonParser;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIConfig;
+import fr.minuskube.inv.InventoryManager;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,6 +25,7 @@ public final class ItemQualities extends JavaPlugin {
     private static ItemQualities instance;
 
     ResourceBundle langBundle;
+    InventoryManager inventoryManager;
 
     Config config;
     String configPath = "%s/config.json".formatted(getDataFolder());
@@ -54,6 +56,9 @@ public final class ItemQualities extends JavaPlugin {
         Utils.registerEvents(new ServerListeners());
 
         UpdateChecker.checkForNewVersion();
+
+        inventoryManager = new InventoryManager(this);
+        inventoryManager.init();
 
         log(getLangBundle().getString("message.plugin.enabled").formatted((float) (System.currentTimeMillis() - start) / 1000));
     }
@@ -113,5 +118,9 @@ public final class ItemQualities extends JavaPlugin {
 
     public Config getConfiguration() {
         return config;
+    }
+
+    public InventoryManager getInventoryManager() {
+        return inventoryManager;
     }
 }

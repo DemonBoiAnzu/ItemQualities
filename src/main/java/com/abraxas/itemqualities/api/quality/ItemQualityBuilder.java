@@ -1,9 +1,9 @@
 package com.abraxas.itemqualities.api.quality;
 
+import com.abraxas.itemqualities.api.QualityAttributeModifier;
 import com.abraxas.itemqualities.api.Registries;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 
 import java.util.Map;
 
@@ -40,12 +40,12 @@ public class ItemQualityBuilder {
         return this;
     }
 
-    public ItemQualityBuilder withAttributeModifier(Attribute attribute, AttributeModifier modifier) {
+    public ItemQualityBuilder withAttributeModifier(Attribute attribute, QualityAttributeModifier modifier) {
         itemQuality.modifiers.put(attribute, modifier);
         return this;
     }
 
-    public ItemQualityBuilder withAttributeModifiers(Map<Attribute, AttributeModifier> mods) {
+    public ItemQualityBuilder withAttributeModifiers(Map<Attribute, QualityAttributeModifier> mods) {
         itemQuality.modifiers.putAll(mods);
         return this;
     }

@@ -1,15 +1,11 @@
 package com.abraxas.itemqualities;
 
-import com.abraxas.itemqualities.api.DurabilityManager;
-import com.abraxas.itemqualities.api.ItemQualityComparator;
-import com.abraxas.itemqualities.api.Keys;
-import com.abraxas.itemqualities.api.Registries;
+import com.abraxas.itemqualities.api.*;
 import com.abraxas.itemqualities.api.quality.ItemQuality;
 import com.abraxas.itemqualities.api.quality.ItemQualityBuilder;
 import com.abraxas.itemqualities.utils.Utils;
 import com.google.common.collect.Multimap;
 import net.md_5.bungee.api.chat.TranslatableComponent;
-import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -39,114 +35,101 @@ public class QualitiesManager {
                 .withNoDropChance(60)
                 .withAdditionalDurabilityLoss(2, 90)
                 .withMaxDurabilityMod(-10)
-                .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ATTACK_DAMAGE.name(),
-                        -2,
-                        AttributeModifier.Operation.ADD_NUMBER,
+                .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new QualityAttributeModifier(-2,
                         HAND))
-
-                .withAttributeModifier(Attribute.GENERIC_ARMOR, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ARMOR.name(),
-                        -3,
-                        AttributeModifier.Operation.ADD_NUMBER))
-                .withAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ARMOR_TOUGHNESS.name(),
-                        -2,
-                        AttributeModifier.Operation.ADD_NUMBER))
-                .withAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ARMOR_TOUGHNESS.name(),
-                        -0.1,
-                        AttributeModifier.Operation.ADD_NUMBER))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR, new QualityAttributeModifier(-3))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, new QualityAttributeModifier(-2))
+                .withAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, new QualityAttributeModifier(-0.1))
                 .build());
-        add(new ItemQualityBuilder(new NamespacedKey(main, "good"), "&2Good", 55, 5)
+
+        add(new ItemQualityBuilder(new NamespacedKey(main, "bad"), "&cBad", 57, 1)
+                .withNoDropChance(55)
+                .withAdditionalDurabilityLoss(2, 85)
+                .withMaxDurabilityMod(-7)
+                .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new QualityAttributeModifier(-1.8,
+                        HAND))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR, new QualityAttributeModifier(-2.6))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, new QualityAttributeModifier(-1.8))
+                .withAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, new QualityAttributeModifier(-0.08))
+                .build());
+
+        add(new ItemQualityBuilder(new NamespacedKey(main, "rusted"), "&cRusted", 50, 2)
+                .withNoDropChance(49)
+                .withAdditionalDurabilityLoss(2, 75)
+                .withMaxDurabilityMod(-5)
+                .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new QualityAttributeModifier(-1.4,
+                        HAND))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR, new QualityAttributeModifier(-2.4))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, new QualityAttributeModifier(-1.6))
+                .withAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, new QualityAttributeModifier(-0.07))
+                .build());
+
+        add(new ItemQualityBuilder(new NamespacedKey(main, "chipped"), "&cChipped", 48, 3)
+                .withNoDropChance(55)
+                .withAdditionalDurabilityLoss(2, 85)
+                .withMaxDurabilityMod(-7)
+                .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new QualityAttributeModifier(-1.1,
+                        HAND))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR, new QualityAttributeModifier(-2.3))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, new QualityAttributeModifier(-1.4))
+                .withAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, new QualityAttributeModifier(-0.05))
+                .build());
+
+        add(new ItemQualityBuilder(new NamespacedKey(main, "decent"), "&eDecent", 60, 4)
+                .withNoDropChance(45)
+                .withAdditionalDurabilityLoss(2, 75)
+                .withMaxDurabilityMod(-4)
+                .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new QualityAttributeModifier(-1,
+                        HAND))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR, new QualityAttributeModifier(-2))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, new QualityAttributeModifier(-1.1))
+                .withAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, new QualityAttributeModifier(-0.03))
+                .build());
+
+        add(new ItemQualityBuilder(new NamespacedKey(main, "good"), "&2Good", 50, 5)
                 .withNoDropChance(40)
-                .withAdditionalDurabilityLoss(1, 90)
+                .withAdditionalDurabilityLoss(1, 65)
                 .withMaxDurabilityMod(-3)
-                .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ATTACK_DAMAGE.name(),
-                        -1.3,
-                        AttributeModifier.Operation.ADD_NUMBER,
+                .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new QualityAttributeModifier(-0.5,
                         HAND))
-
-                .withAttributeModifier(Attribute.GENERIC_ARMOR, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ARMOR.name(),
-                        -2.4,
-                        AttributeModifier.Operation.ADD_NUMBER))
-                .withAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ARMOR_TOUGHNESS.name(),
-                        -1.8,
-                        AttributeModifier.Operation.ADD_NUMBER))
-                .withAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ARMOR_TOUGHNESS.name(),
-                        -0.05,
-                        AttributeModifier.Operation.ADD_NUMBER))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR, new QualityAttributeModifier(-1.7))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, new QualityAttributeModifier(-1))
+                .withAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, new QualityAttributeModifier(-0.01))
                 .build());
-        add(new ItemQualityBuilder(new NamespacedKey(main, "great"), "&eGreat", 55, 6)
-                .withNoDropChance(20)
-                .withAdditionalDurabilityLoss(1, 40)
+
+        add(new ItemQualityBuilder(new NamespacedKey(main, "great"), "&eGreat", 48, 6)
+                .withNoDropChance(10)
+                .withAdditionalDurabilityLoss(1, 15)
                 .withMaxDurabilityMod(-3)
-                .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ATTACK_DAMAGE.name(),
-                        -1,
-                        AttributeModifier.Operation.ADD_NUMBER,
+                .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new QualityAttributeModifier(-1,
                         HAND))
-
-                .withAttributeModifier(Attribute.GENERIC_ARMOR, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ARMOR.name(),
-                        -2,
-                        AttributeModifier.Operation.ADD_NUMBER))
-                .withAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ARMOR_TOUGHNESS.name(),
-                        -1,
-                        AttributeModifier.Operation.ADD_NUMBER))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR, new QualityAttributeModifier(-0.7))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, new QualityAttributeModifier(-0.009))
                 .build());
+
         add(new ItemQualityBuilder(new NamespacedKey(main, "perfect"), "&aPerfect", 45, 8)
                 .build());
+
         add(new ItemQualityBuilder(new NamespacedKey(main, "legendary"), "&6Legendary", 4, 9)
                 .withNoDurabilityLossChance(60)
                 .withMaxDurabilityMod(70)
                 .withDoubleDropsChance(7)
-                .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ATTACK_DAMAGE.name(),
-                        2.3,
-                        AttributeModifier.Operation.ADD_NUMBER,
+                .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new QualityAttributeModifier(2.3,
                         HAND))
-
-                .withAttributeModifier(Attribute.GENERIC_ARMOR, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ARMOR.name(),
-                        0.8,
-                        AttributeModifier.Operation.ADD_NUMBER))
-                .withAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ARMOR_TOUGHNESS.name(),
-                        0.7,
-                        AttributeModifier.Operation.ADD_NUMBER))
-                .withAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ARMOR_TOUGHNESS.name(),
-                        0.05,
-                        AttributeModifier.Operation.ADD_NUMBER))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR, new QualityAttributeModifier(0.8))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, new QualityAttributeModifier(0.7))
+                .withAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, new QualityAttributeModifier(0.05))
                 .build());
+
         add(new ItemQualityBuilder(new NamespacedKey(main, "godly"), "&6Godly", 3, 10)
                 .withNoDurabilityLossChance(70)
                 .withMaxDurabilityMod(100)
                 .withDoubleDropsChance(10)
-                .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ATTACK_DAMAGE.name(),
-                        3,
-                        AttributeModifier.Operation.ADD_NUMBER,
+                .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new QualityAttributeModifier(3,
                         HAND))
-
-                .withAttributeModifier(Attribute.GENERIC_ARMOR, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ARMOR.name(),
-                        1,
-                        AttributeModifier.Operation.ADD_NUMBER))
-                .withAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ARMOR_TOUGHNESS.name(),
-                        1,
-                        AttributeModifier.Operation.ADD_NUMBER))
-                .withAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, new AttributeModifier(UUID.randomUUID(),
-                        Attribute.GENERIC_ARMOR_TOUGHNESS.name(),
-                        0.1,
-                        AttributeModifier.Operation.ADD_NUMBER))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR, new QualityAttributeModifier(1))
+                .withAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, new QualityAttributeModifier(1))
+                .withAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, new QualityAttributeModifier(0.1))
                 .build());
     }};
 
@@ -211,6 +194,16 @@ public class QualitiesManager {
         }
     }
 
+    public static ItemStack refreshItem(ItemStack itemStack) {
+        return refreshItem(itemStack, null);
+    }
+
+    public static ItemStack refreshItem(ItemStack itemStack, ItemQuality updatedQuality) {
+        var itemsQuality = (updatedQuality != null) ? updatedQuality : getQuality(itemStack);
+        removeQualityFromItem(itemStack);
+        return addQualityToItem(itemStack, (itemsQuality == null) ? getRandomQuality() : itemsQuality);
+    }
+
     public static ItemStack addQualityToItem(ItemStack itemStack, ItemQuality itemQuality) {
         var itemMeta = itemStack.getItemMeta();
         if (itemMeta == null || !itemCanHaveQuality(itemStack) || itemHasQuality(itemStack)) return itemStack;
@@ -219,9 +212,9 @@ public class QualitiesManager {
         itemMeta.getPersistentDataContainer().set(Keys.ITEM_QUALITY_KEY, PersistentDataType.STRING, itemQuality.key.getKey());
 
         List<String> newLore = (itemMeta.getLore() != null) ? itemMeta.getLore() : new ArrayList<>();
-
         if (!getConfig().displayQualityInLore) {
-            String itemName = new TranslatableComponent("item.minecraft.%s".formatted(itemStack.getType().toString().toLowerCase())).toPlainText();
+            var customItemName = itemMeta.getPersistentDataContainer().getOrDefault(Keys.ITEM_CUSTOM_NAME_KEY, PersistentDataType.STRING, "");
+            String itemName = (!customItemName.isEmpty()) ? customItemName : new TranslatableComponent("item.minecraft.%s".formatted(itemStack.getType().toString().toLowerCase())).toPlainText();
             itemMeta.setDisplayName(colorize(getConfig().itemQualityDisplayFormat.replace("{QUALITY}", itemQuality.display).replace("{ITEM}", itemName)));
         } else {
             newLore.add(colorize("&r%s %s".formatted(itemQuality.display, main.getTranslation("lore.stat.quality"))));
@@ -273,11 +266,15 @@ public class QualitiesManager {
                     break;
             }
 
+            EquipmentSlot slot = attributeModifier.getSlot(itemStack);
+            if (slot != Utils.getItemsMainSlot(itemStack)) canAdd = false;
+            if (attributeModifier.ignoredSlots != null && attributeModifier.ignoredSlots.contains(slot)) canAdd = false;
+
             if (canAdd) {
                 double initialValue = 0;
 
-                if (defAttributes.containsKey(attributeModifier.getSlot())) {
-                    var defForSlot = defAttributes.get(attributeModifier.getSlot());
+                if (defAttributes.containsKey(attributeModifier.getSlot(itemStack))) {
+                    var defForSlot = defAttributes.get(attributeModifier.getSlot(itemStack));
                     var curDef = defForSlot.get(attribute).stream().findFirst();
                     if (curDef.isPresent()) {
                         var defaultMod = curDef.get();
@@ -285,56 +282,22 @@ public class QualitiesManager {
                     }
                 }
 
-                EquipmentSlot slot = attributeModifier.getSlot();
-                if (isArmor(itemStack)) {
-                    var itemSt = itemStack.getType().toString();
-                    if (itemSt.contains("HELMET")) slot = HEAD;
-                    else if (itemSt.contains("CHESTPLATE") || itemSt.contains("TUNIC") || itemSt.contains("ELYTRA"))
-                        slot = CHEST;
-                    else if (itemSt.contains("LEGGINGS")) slot = LEGS;
-                    else if (itemSt.contains("BOOTS")) slot = FEET;
-
-                    var defForArmorSlot = defAttributes.get(slot);
-                    for (Attribute attr : defForArmorSlot.keys()) {
-                        if (attr.equals(attribute)) {
-                            var curDefForArmorSlot = defForArmorSlot.get(attr).stream().findFirst();
-                            if (curDefForArmorSlot.isPresent()) {
-                                var defaultMod = curDefForArmorSlot.get();
-                                initialValue = defaultMod.getAmount();
-                            }
-                        }
-                    }
-                    /*if (attribute == Attribute.GENERIC_ARMOR || attribute == Attribute.GENERIC_ARMOR_TOUGHNESS || attribute == Attribute.GENERIC_KNOCKBACK_RESISTANCE) {
-
-                    }*/
-                }
-                if (slot == null) {
-                    //if(isMiningTool(itemStack) || isMeleeWeapon(itemStack) || isProjectileLauncher(itemStack))
-                    slot = HAND;
-                }
-
                 var sharpnessLevel = itemStack.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-
-                var newAmount = initialValue + attributeModifier.getAmount() + ((sharpnessLevel == 1) ? 1 :
+                var newAmount = initialValue + attributeModifier.getAmount(slot) + ((sharpnessLevel == 1) ? 1 :
                         (sharpnessLevel == 2) ? 1.5d :
                                 (sharpnessLevel == 3) ? 2 :
                                         (sharpnessLevel == 4) ? 2.5d :
                                                 (sharpnessLevel == 5) ? 3 : 0);
-                var newMod = new AttributeModifier(UUID.randomUUID(),
-                        attributeModifier.getName(),
-                        newAmount,
-                        attributeModifier.getOperation(),
+                var newMod = new QualityAttributeModifier(newAmount,
                         slot);
                 itemMeta.removeAttributeModifier(attribute);
                 if (itemMeta.getAttributeModifiers() == null || !itemMeta.getAttributeModifiers().containsKey(attribute))
-                    itemMeta.addAttributeModifier(attribute, newMod);
+                    itemMeta.addAttributeModifier(attribute, newMod.getModifier(itemStack, attribute));
                 var attrN = attribute.name().toLowerCase().replace("generic_", "generic.");
                 var attrTrans = new TranslatableComponent("attribute.name.%s".formatted(attrN));
-                //log(attrTrans.toPlainText());
 
                 var attrFinal = attrTrans.toPlainText();
-                //WordUtils.capitalize(attribute.name().toLowerCase().replace("_", " ").replace("generic ", ""));
-                newLore.add(colorize((attributeModifier.getAmount() > 0) ? "&a+" : "&c") + attributeModifier.getAmount() + " " + attrFinal);
+                newLore.add(colorize((attributeModifier.getAmount(slot) > 0) ? "&a+" : "&c") + attributeModifier.getAmount(slot) + " " + attrFinal);
             }
         });
 
@@ -374,12 +337,16 @@ public class QualitiesManager {
         itemMeta.getPersistentDataContainer().remove(Keys.MAX_ITEM_DURABILITY_KEY);
         itemMeta.getPersistentDataContainer().remove(Keys.ITEM_DURABILITY_KEY);
 
-        String itemName = WordUtils.capitalize(itemStack.getType().toString().toLowerCase().replace("_", " "));
+        var customItemName = itemMeta.getPersistentDataContainer().getOrDefault(Keys.ITEM_CUSTOM_NAME_KEY, PersistentDataType.STRING, "");
+        String itemName = (!customItemName.isEmpty()) ? customItemName : new TranslatableComponent("item.minecraft.%s".formatted(itemStack.getType().toString().toLowerCase())).toPlainText();
         itemMeta.setDisplayName(colorize("&r" + itemName));
 
         itemMeta.setLore(new ArrayList<>());
 
-        if (itemMeta.hasAttributeModifiers()) itemQuality.modifiers.forEach(itemMeta::removeAttributeModifier);
+        if (itemMeta.hasAttributeModifiers()) itemQuality.modifiers.forEach((attribute, qualityAttributeModifier) -> {
+            itemMeta.removeAttributeModifier(attribute);
+            itemMeta.removeAttributeModifier(attribute, qualityAttributeModifier.getModifier(itemStack, attribute));
+        });
 
         itemStack.setItemMeta(itemMeta);
 
@@ -387,7 +354,7 @@ public class QualitiesManager {
     }
 
     public static boolean itemCanHaveQuality(ItemStack itemStack) {
-        return itemStack.getItemMeta() instanceof Damageable && itemStack.getType().getMaxDurability() > 0;
+        return itemStack.getItemMeta() instanceof Damageable && itemStack.getType().getMaxDurability() > 0 && !getConfig().itemBlacklist.contains(itemStack.getType());
     }
 
     public static ItemQuality getRandomQuality() {

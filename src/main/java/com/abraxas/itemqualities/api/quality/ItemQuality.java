@@ -1,9 +1,9 @@
 package com.abraxas.itemqualities.api.quality;
 
 import com.abraxas.itemqualities.api.APIUtils;
+import com.abraxas.itemqualities.api.QualityAttributeModifier;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +12,7 @@ public class ItemQuality {
     public NamespacedKey key;
     public String display;
 
-    public Map<Attribute, AttributeModifier> modifiers;
+    public Map<Attribute, QualityAttributeModifier> modifiers;
 
     public int addToItemChance;
 
