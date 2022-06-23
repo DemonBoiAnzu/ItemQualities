@@ -20,7 +20,7 @@ public class QualityPreviewInvProvider implements InventoryProvider {
 
     @Override
     public void init(Player player, InventoryContents contents) {
-        var rawQualityPreviewingKey = player.getPersistentDataContainer().getOrDefault(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING, PersistentDataType.STRING, "").split(":");
+        var rawQualityPreviewingKey = player.getPersistentDataContainer().getOrDefault(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY, PersistentDataType.STRING, "").split(":");
         var qualityNamespace = new NamespacedKey(rawQualityPreviewingKey[0], rawQualityPreviewingKey[1]);
         var quality = QualitiesManager.getQualityById(qualityNamespace);
         if (quality == null) {
@@ -62,7 +62,7 @@ public class QualityPreviewInvProvider implements InventoryProvider {
         // Go Back
         contents.set(2, 4, ClickableItem.of(InvUtils.arrowLeftBtn, e -> {
             e.setCancelled(true);
-            player.getPersistentDataContainer().remove(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING);
+            player.getPersistentDataContainer().remove(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY);
             Inventories.QUALITY_MANAGER_INVENTORY.open(player, 0);
         }));
     }

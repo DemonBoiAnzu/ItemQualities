@@ -1,11 +1,13 @@
 package com.abraxas.itemqualities.inventories.providers;
 
+import com.abraxas.itemqualities.ItemQualities;
 import com.abraxas.itemqualities.api.ItemQualityComparator;
 import com.abraxas.itemqualities.api.Keys;
 import com.abraxas.itemqualities.api.Registries;
 import com.abraxas.itemqualities.api.quality.ItemQuality;
 import com.abraxas.itemqualities.inventories.Inventories;
 import com.abraxas.itemqualities.inventories.utils.InvUtils;
+import com.abraxas.itemqualities.utils.QualityChatValues;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
@@ -25,7 +27,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.abraxas.itemqualities.utils.Utils.colorize;
+import static com.abraxas.itemqualities.utils.Utils.sendMessageWithPrefix;
 
+// TODO: Finish up the editing, add deletion system and finish translations for new messages
 public class QualityManagerInvProvider implements InventoryProvider {
     @Override
     public void init(Player player, InventoryContents contents) {
@@ -45,17 +49,20 @@ public class QualityManagerInvProvider implements InventoryProvider {
             var qualityItemMeta = qualityItem.getItemMeta();
             qualityItemMeta.setDisplayName(colorize(quality.display + " &bQuality"));
             qualityItemMeta.setLore(new ArrayList<>() {{
+                add(colorize("&bTier: &e%s".formatted(quality.tier)));
+                add("");
                 add(colorize("&eLeft-Click &7to preview."));
                 add(colorize("&eRight-Click &7to edit."));
+                add("");
+                add(colorize("&9&oFrom '%s'".formatted(quality.key.getNamespace())));
             }});
             qualityItem.setItemMeta(qualityItemMeta);
             var qualityClickableItem = ClickableItem.of(qualityItem, e -> {
-                player.getPersistentDataContainer().set(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING, PersistentDataType.STRING, quality.key.toString());
-                if (e.isLeftClick()) {
+                player.getPersistentDataContainer().set(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY, PersistentDataType.STRING, quality.key.toString());
+                if (e.isLeftClick())
                     Inventories.QUALITY_PREVIEW_INVENTORY.open(player);
-                } else if (e.isRightClick()) {
-
-                }
+                else if (e.isRightClick())
+                    Inventories.QUALITY_EDIT_INVENTORY.open(player);
             });
 
             items[i] = qualityClickableItem;
@@ -81,8 +88,9 @@ public class QualityManagerInvProvider implements InventoryProvider {
             newQualityItem.setItemMeta(newQualityItemMeta);
             contents.set(firstEmpty, ClickableItem.of(newQualityItem, e -> {
                 e.setCancelled(true);
-                player.sendMessage("oog");
-                // Open edit inventory to create new quality
+                player.getPersistentDataContainer().set(Keys.PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.NEW_QUALITY_ID);
+                sendMessageWithPrefix(player, ItemQualities.getInstance().getTranslation("message.plugin.qualitycreation.enterid"));
+                player.closeInventory();
             }));
         }
 

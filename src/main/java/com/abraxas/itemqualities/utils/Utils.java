@@ -51,6 +51,11 @@ public class Utils {
         return player.isOp() || (perm != null && player.hasPermission(perm));
     }
 
+    public static boolean canUseQualityManager(Player player) {
+        var perm = Bukkit.getPluginManager().getPermission(Permissions.MANAGE_QUALITIES_PERMISSION);
+        return player.isOp() || (perm != null && player.hasPermission(perm));
+    }
+
     public static boolean chanceOf(int chance) {
         return random.nextInt(100) <= chance;
     }

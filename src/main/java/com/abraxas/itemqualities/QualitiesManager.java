@@ -155,7 +155,7 @@ public class QualitiesManager {
                 });
             } else {
                 exampleQualities.forEach(i -> {
-                    var path = Path.of("%s/qualities/%s.json".formatted(main.getDataFolder(), i.key));
+                    var path = Path.of("%s/qualities/%s.json".formatted(main.getDataFolder(), i.key.getKey()));
                     if (Files.exists(path)) {
                         try {
                             Files.delete(path);
@@ -174,14 +174,33 @@ public class QualitiesManager {
             Utils.log(main.getTranslation("message.plugin.registering_qualities"));
             qualities.forEach(itemPath -> {
                 try {
-                    var json = Files.readString(itemPath, StandardCharsets.UTF_8);
-                    if (getConfig().debugMode)
-                        Utils.log(main.getTranslation("message.plugin.registering_quality").formatted(itemPath.getFileName()));
-                    var quality = ItemQuality.deserialize(json);
-
-                    Registries.qualitiesRegistry.register(quality.key, quality);
-                    if (getConfig().debugMode)
-                        Utils.log(main.getTranslation("message.plugin.quality_registered").formatted(quality.key));
+                    if (!Files.isDirectory(itemPath)) { // If the file is not a directory, register it.
+                        if (itemPath.getFileName().toString().endsWith(".json")) {
+                            var itemFileName = itemPath.getFileName().toString().replace(".json", "");
+                            var json = Files.readString(itemPath, StandardCharsets.UTF_8);
+                            var quality = ItemQuality.deserialize(json);
+                            if (quality.key == null) quality.key = new NamespacedKey(main, itemFileName);
+                            register(quality);
+                        }
+                    } else { // If the file is a directory, get the files within it and register.
+                        var otherQualities = Files.list(itemPath);
+                        otherQualities.forEach(otherPath -> {
+                            try {
+                                if (!Files.isDirectory(otherPath)) {
+                                    if (otherPath.getFileName().toString().endsWith(".json")) {
+                                        var itemFileName = otherPath.getFileName().toString().replace(".json", "");
+                                        var json = Files.readString(otherPath, StandardCharsets.UTF_8);
+                                        var quality = ItemQuality.deserialize(json);
+                                        if (quality.key == null)
+                                            quality.key = new NamespacedKey(itemPath.getFileName().toString(), itemFileName);
+                                        register(quality);
+                                    }
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -190,6 +209,40 @@ public class QualitiesManager {
             Utils.log(main.getTranslation("message.plugin.custom_quality_reminder").formatted("https://github.com/Steel-Dev/ItemQualities/wiki/Creating"));
         } catch (IOException e) {
             Utils.log(main.getTranslation("message.plugin.registration_error"));
+            e.printStackTrace();
+        }
+    }
+
+    public static void register(ItemQuality quality) {
+        if (getConfig().debugMode)
+            Utils.log(main.getTranslation("message.plugin.registering_quality").formatted(quality.key));
+        if (Registries.qualitiesRegistry.contains(quality.key)) {
+            if (getConfig().debugMode)
+                Utils.log(main.getTranslation("message.plugin.quality_already_exists").formatted(quality.key));
+            return;
+        }
+        Registries.qualitiesRegistry.register(quality.key, quality);
+        if (getConfig().debugMode)
+            Utils.log(main.getTranslation("message.plugin.quality_registered").formatted(quality.key));
+    }
+
+    public static void saveQualityToFile(ItemQuality itemQuality) {
+        try {
+            var path = Path.of("%s/qualities/%s.json".formatted(main.getDataFolder(), itemQuality.key.getKey()));
+            Files.writeString(path, ItemQuality.serialize(itemQuality));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteQuality(ItemQuality itemQuality) {
+        try {
+            var path = Path.of("%s/qualities/%s.json".formatted(main.getDataFolder(),
+                    (!itemQuality.key.getNamespace().equals("itemqualities")) ? "%s/%s".formatted(itemQuality.key.getNamespace(), itemQuality.key.getKey()) :
+                            itemQuality.key.getKey()));
+            Files.delete(path);
+            Registries.qualitiesRegistry.unregister(itemQuality.key);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -343,10 +396,11 @@ public class QualitiesManager {
 
         itemMeta.setLore(new ArrayList<>());
 
-        if (itemMeta.hasAttributeModifiers()) itemQuality.modifiers.forEach((attribute, qualityAttributeModifier) -> {
-            itemMeta.removeAttributeModifier(attribute);
-            itemMeta.removeAttributeModifier(attribute, qualityAttributeModifier.getModifier(itemStack, attribute));
-        });
+        if (itemMeta.hasAttributeModifiers() && itemQuality != null)
+            itemQuality.modifiers.forEach((attribute, qualityAttributeModifier) -> {
+                itemMeta.removeAttributeModifier(attribute);
+                itemMeta.removeAttributeModifier(attribute, qualityAttributeModifier.getModifier(itemStack, attribute));
+            });
 
         itemStack.setItemMeta(itemMeta);
 

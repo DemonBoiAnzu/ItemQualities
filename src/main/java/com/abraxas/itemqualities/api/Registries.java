@@ -72,6 +72,10 @@ public class Registries {
             return null;
         }
 
+        public boolean contains(NamespacedKey key) {
+            return registry.containsKey(key);
+        }
+
         /**
          * Get the entire registry.
          *
