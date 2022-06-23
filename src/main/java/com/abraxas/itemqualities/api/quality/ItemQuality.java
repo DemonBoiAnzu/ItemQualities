@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ItemQuality {
-    public NamespacedKey key;
+    public transient NamespacedKey key;
     public String display;
 
     public Map<Attribute, QualityAttributeModifier> modifiers;
