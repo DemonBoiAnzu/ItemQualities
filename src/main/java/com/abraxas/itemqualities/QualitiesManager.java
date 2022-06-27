@@ -228,7 +228,9 @@ public class QualitiesManager {
 
     public static void saveQualityToFile(ItemQuality itemQuality) {
         try {
-            var path = Path.of("%s/qualities/%s.json".formatted(main.getDataFolder(), itemQuality.key.getKey()));
+            var path = Path.of("%s/qualities/%s.json".formatted(main.getDataFolder(),
+                    (!itemQuality.key.getNamespace().equals("itemqualities")) ? "%s/%s".formatted(itemQuality.key.getNamespace(), itemQuality.key.getKey()) :
+                            itemQuality.key.getKey()));
             Files.writeString(path, ItemQuality.serialize(itemQuality));
         } catch (IOException e) {
             e.printStackTrace();

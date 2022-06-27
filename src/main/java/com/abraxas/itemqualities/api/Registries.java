@@ -76,6 +76,10 @@ public class Registries {
             return registry.containsKey(key);
         }
 
+        public void updateValue(NamespacedKey key, T newValue) {
+            registry.replace(key, newValue);
+        }
+
         /**
          * Get the entire registry.
          *

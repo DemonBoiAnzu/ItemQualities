@@ -29,7 +29,7 @@ import java.util.List;
 import static com.abraxas.itemqualities.utils.Utils.colorize;
 import static com.abraxas.itemqualities.utils.Utils.sendMessageWithPrefix;
 
-// TODO: Finish up the editing, add deletion system and finish translations for new messages
+// TODO: Finish up the editing for Modifiers and finish translations for new messages
 public class QualityManagerInvProvider implements InventoryProvider {
     @Override
     public void init(Player player, InventoryContents contents) {
@@ -89,7 +89,7 @@ public class QualityManagerInvProvider implements InventoryProvider {
             contents.set(firstEmpty, ClickableItem.of(newQualityItem, e -> {
                 e.setCancelled(true);
                 player.getPersistentDataContainer().set(Keys.PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.NEW_QUALITY_ID);
-                sendMessageWithPrefix(player, ItemQualities.getInstance().getTranslation("message.plugin.qualitycreation.enterid"));
+                sendMessageWithPrefix(player, ItemQualities.getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("ID"));
                 player.closeInventory();
             }));
         }

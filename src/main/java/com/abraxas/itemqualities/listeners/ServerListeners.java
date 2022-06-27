@@ -41,9 +41,10 @@ public class ServerListeners implements Listener {
         }
 
         if (event.getMessage().equals("cancel")) {
+            event.setCancelled(true);
             event.getPlayer().getPersistentDataContainer().remove(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY);
             event.getPlayer().getPersistentDataContainer().remove(Keys.PLAYER_TYPING_VALUE_KEY);
-            Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.qualitycreation.canceled"));
+            Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.canceled"));
             return;
         }
 
@@ -61,7 +62,7 @@ public class ServerListeners implements Listener {
             QualitiesManager.saveQualityToFile(newQuality);
             event.getPlayer().getPersistentDataContainer().remove(Keys.PLAYER_TYPING_VALUE_KEY);
             event.getPlayer().getPersistentDataContainer().set(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY, PersistentDataType.STRING, newQuality.key.toString());
-            Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.qualitycreation.value_updated").formatted("quality id", value));
+            Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.value_updated").formatted("quality id", value));
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -87,7 +88,199 @@ public class ServerListeners implements Listener {
             QualitiesManager.saveQualityToFile(quality);
             event.getPlayer().getPersistentDataContainer().remove(Keys.PLAYER_TYPING_VALUE_KEY);
             event.getPlayer().getPersistentDataContainer().set(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY, PersistentDataType.STRING, quality.key.toString());
-            Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.qualitycreation.value_updated").formatted("quality id", value));
+            Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.value_updated").formatted("quality id", value));
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Inventories.QUALITY_EDIT_INVENTORY.open(player);
+                }
+            }.runTaskLater(main, 15);
+        } else if (valueId.equals(QualityChatValues.UPDATE_QUALITY_DISPLAY)) {
+            event.setCancelled(true);
+            var value = event.getMessage();
+            var rawQualityPreviewingKey = player.getPersistentDataContainer().getOrDefault(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY, PersistentDataType.STRING, "").split(":");
+            var qualityNamespace = new NamespacedKey(rawQualityPreviewingKey[0], rawQualityPreviewingKey[1]);
+            var quality = QualitiesManager.getQualityById(qualityNamespace);
+            quality.display = value;
+            Registries.qualitiesRegistry.updateValue(quality.key, quality);
+            QualitiesManager.saveQualityToFile(quality);
+            Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.value_updated").formatted("Quality Display", value));
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Inventories.QUALITY_EDIT_INVENTORY.open(player);
+                }
+            }.runTaskLater(main, 15);
+        } else if (valueId.equals(QualityChatValues.UPDATE_QUALITY_TIER)) {
+            event.setCancelled(true);
+            var value = 0;
+            try {
+                value = Integer.parseInt(event.getMessage());
+            } catch (NumberFormatException e) {
+                Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.unexpected_value_type").formatted("Integer"));
+                return;
+            }
+            var rawQualityPreviewingKey = player.getPersistentDataContainer().getOrDefault(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY, PersistentDataType.STRING, "").split(":");
+            var qualityNamespace = new NamespacedKey(rawQualityPreviewingKey[0], rawQualityPreviewingKey[1]);
+            var quality = QualitiesManager.getQualityById(qualityNamespace);
+            quality.tier = value;
+            Registries.qualitiesRegistry.updateValue(quality.key, quality);
+            QualitiesManager.saveQualityToFile(quality);
+            Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.value_updated").formatted("Quality Tier", value));
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Inventories.QUALITY_EDIT_INVENTORY.open(player);
+                }
+            }.runTaskLater(main, 15);
+        } else if (valueId.equals(QualityChatValues.UPDATE_QUALITY_ADD_CHANCE)) {
+            event.setCancelled(true);
+            var value = 0;
+            try {
+                value = Integer.parseInt(event.getMessage());
+            } catch (NumberFormatException e) {
+                Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.unexpected_value_type").formatted("Integer"));
+                return;
+            }
+            var rawQualityPreviewingKey = player.getPersistentDataContainer().getOrDefault(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY, PersistentDataType.STRING, "").split(":");
+            var qualityNamespace = new NamespacedKey(rawQualityPreviewingKey[0], rawQualityPreviewingKey[1]);
+            var quality = QualitiesManager.getQualityById(qualityNamespace);
+            quality.addToItemChance = value;
+            Registries.qualitiesRegistry.updateValue(quality.key, quality);
+            QualitiesManager.saveQualityToFile(quality);
+            Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.value_updated").formatted("Quality Add Chance", value));
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Inventories.QUALITY_EDIT_INVENTORY.open(player);
+                }
+            }.runTaskLater(main, 15);
+        } else if (valueId.equals(QualityChatValues.UPDATE_QUALITY_NO_DROPS_CHANCE)) {
+            event.setCancelled(true);
+            var value = 0;
+            try {
+                value = Integer.parseInt(event.getMessage());
+            } catch (NumberFormatException e) {
+                Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.unexpected_value_type").formatted("Integer"));
+                return;
+            }
+            var rawQualityPreviewingKey = player.getPersistentDataContainer().getOrDefault(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY, PersistentDataType.STRING, "").split(":");
+            var qualityNamespace = new NamespacedKey(rawQualityPreviewingKey[0], rawQualityPreviewingKey[1]);
+            var quality = QualitiesManager.getQualityById(qualityNamespace);
+            quality.noDropChance = value;
+            Registries.qualitiesRegistry.updateValue(quality.key, quality);
+            QualitiesManager.saveQualityToFile(quality);
+            Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.value_updated").formatted("Quality No Drops Chance", value));
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Inventories.QUALITY_EDIT_INVENTORY.open(player);
+                }
+            }.runTaskLater(main, 15);
+        } else if (valueId.equals(QualityChatValues.UPDATE_QUALITY_DOUBLE_DROPS_CHANCE)) {
+            event.setCancelled(true);
+            var value = 0;
+            try {
+                value = Integer.parseInt(event.getMessage());
+            } catch (NumberFormatException e) {
+                Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.unexpected_value_type").formatted("Integer"));
+                return;
+            }
+            var rawQualityPreviewingKey = player.getPersistentDataContainer().getOrDefault(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY, PersistentDataType.STRING, "").split(":");
+            var qualityNamespace = new NamespacedKey(rawQualityPreviewingKey[0], rawQualityPreviewingKey[1]);
+            var quality = QualitiesManager.getQualityById(qualityNamespace);
+            quality.doubleDropsChance = value;
+            Registries.qualitiesRegistry.updateValue(quality.key, quality);
+            QualitiesManager.saveQualityToFile(quality);
+            Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.value_updated").formatted("Quality Double Drops Chance", value));
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Inventories.QUALITY_EDIT_INVENTORY.open(player);
+                }
+            }.runTaskLater(main, 15);
+        } else if (valueId.equals(QualityChatValues.UPDATE_QUALITY_MAX_DURABILITY_MOD)) {
+            event.setCancelled(true);
+            var value = 0;
+            try {
+                value = Integer.parseInt(event.getMessage());
+            } catch (NumberFormatException e) {
+                Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.unexpected_value_type").formatted("Integer"));
+                return;
+            }
+            var rawQualityPreviewingKey = player.getPersistentDataContainer().getOrDefault(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY, PersistentDataType.STRING, "").split(":");
+            var qualityNamespace = new NamespacedKey(rawQualityPreviewingKey[0], rawQualityPreviewingKey[1]);
+            var quality = QualitiesManager.getQualityById(qualityNamespace);
+            quality.itemMaxDurabilityMod = value;
+            Registries.qualitiesRegistry.updateValue(quality.key, quality);
+            QualitiesManager.saveQualityToFile(quality);
+            Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.value_updated").formatted("Quality Max Durability Mod", value));
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Inventories.QUALITY_EDIT_INVENTORY.open(player);
+                }
+            }.runTaskLater(main, 15);
+        } else if (valueId.equals(QualityChatValues.UPDATE_QUALITY_NO_DURABILITY_LOSS_CHANCE)) {
+            event.setCancelled(true);
+            var value = 0;
+            try {
+                value = Integer.parseInt(event.getMessage());
+            } catch (NumberFormatException e) {
+                Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.unexpected_value_type").formatted("Integer"));
+                return;
+            }
+            var rawQualityPreviewingKey = player.getPersistentDataContainer().getOrDefault(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY, PersistentDataType.STRING, "").split(":");
+            var qualityNamespace = new NamespacedKey(rawQualityPreviewingKey[0], rawQualityPreviewingKey[1]);
+            var quality = QualitiesManager.getQualityById(qualityNamespace);
+            quality.noDurabilityLossChance = value;
+            Registries.qualitiesRegistry.updateValue(quality.key, quality);
+            QualitiesManager.saveQualityToFile(quality);
+            Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.value_updated").formatted("Quality No Durability Loss Chance", value));
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Inventories.QUALITY_EDIT_INVENTORY.open(player);
+                }
+            }.runTaskLater(main, 15);
+        } else if (valueId.equals(QualityChatValues.UPDATE_QUALITY_EXTRA_DURABILITY_LOSS)) {
+            event.setCancelled(true);
+            var value = 0;
+            try {
+                value = Integer.parseInt(event.getMessage());
+            } catch (NumberFormatException e) {
+                Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.unexpected_value_type").formatted("Integer"));
+                return;
+            }
+            var rawQualityPreviewingKey = player.getPersistentDataContainer().getOrDefault(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY, PersistentDataType.STRING, "").split(":");
+            var qualityNamespace = new NamespacedKey(rawQualityPreviewingKey[0], rawQualityPreviewingKey[1]);
+            var quality = QualitiesManager.getQualityById(qualityNamespace);
+            quality.extraDurabilityLoss = value;
+            Registries.qualitiesRegistry.updateValue(quality.key, quality);
+            QualitiesManager.saveQualityToFile(quality);
+            Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.value_updated").formatted("Quality Extra Durability Loss", value));
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Inventories.QUALITY_EDIT_INVENTORY.open(player);
+                }
+            }.runTaskLater(main, 15);
+        } else if (valueId.equals(QualityChatValues.UPDATE_QUALITY_EXTRA_DURABILITY_LOSS_CHANCE)) {
+            event.setCancelled(true);
+            var value = 0;
+            try {
+                value = Integer.parseInt(event.getMessage());
+            } catch (NumberFormatException e) {
+                Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.unexpected_value_type").formatted("Integer"));
+                return;
+            }
+            var rawQualityPreviewingKey = player.getPersistentDataContainer().getOrDefault(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY, PersistentDataType.STRING, "").split(":");
+            var qualityNamespace = new NamespacedKey(rawQualityPreviewingKey[0], rawQualityPreviewingKey[1]);
+            var quality = QualitiesManager.getQualityById(qualityNamespace);
+            quality.extraDurabilityLossChance = value;
+            Registries.qualitiesRegistry.updateValue(quality.key, quality);
+            QualitiesManager.saveQualityToFile(quality);
+            Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.value_updated").formatted("Quality Extra Durability Loss Chance", value));
             new BukkitRunnable() {
                 @Override
                 public void run() {
