@@ -16,14 +16,14 @@ public class DurabilityManager {
         var meta = itemStack.getItemMeta();
         if (meta == null) return 0;
 
-        return meta.getPersistentDataContainer().getOrDefault(Keys.MAX_ITEM_DURABILITY_KEY, PersistentDataType.INTEGER, 0);
+        return meta.getPersistentDataContainer().getOrDefault(Keys.MAX_ITEM_DURABILITY, PersistentDataType.INTEGER, 0);
     }
 
     public static int getItemCustomDamage(ItemStack itemStack) {
         var meta = itemStack.getItemMeta();
         if (meta == null) return 0;
 
-        return meta.getPersistentDataContainer().getOrDefault(Keys.ITEM_DURABILITY_KEY, PersistentDataType.INTEGER, 0);
+        return meta.getPersistentDataContainer().getOrDefault(Keys.ITEM_DURABILITY, PersistentDataType.INTEGER, 0);
     }
 
     public static int getItemMaxDurability(ItemStack itemStack) {
@@ -66,7 +66,7 @@ public class DurabilityManager {
 
         damageable.setDamage((int) newDur);
 
-        damageable.getPersistentDataContainer().set(Keys.ITEM_DURABILITY_KEY, PersistentDataType.INTEGER, customDur);
+        damageable.getPersistentDataContainer().set(Keys.ITEM_DURABILITY, PersistentDataType.INTEGER, customDur);
 
         itemStack.setItemMeta(damageable);
         if (customDur >= customMaxDur)
@@ -102,7 +102,7 @@ public class DurabilityManager {
             itemStack.setItemMeta(damageable);
             return;
         }
-        damageable.getPersistentDataContainer().set(Keys.ITEM_DURABILITY_KEY, PersistentDataType.INTEGER, customDur - amount);
+        damageable.getPersistentDataContainer().set(Keys.ITEM_DURABILITY, PersistentDataType.INTEGER, customDur - amount);
         itemStack.setItemMeta(damageable);
     }
 }

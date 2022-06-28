@@ -30,7 +30,7 @@ import static com.abraxas.itemqualities.utils.Utils.colorize;
 import static com.abraxas.itemqualities.utils.Utils.sendMessageWithPrefix;
 
 // TODO: Finish up the editing for Modifiers and finish translations for new messages
-public class QualityManagerInvProvider implements InventoryProvider {
+public class QualityManager implements InventoryProvider {
     @Override
     public void init(Player player, InventoryContents contents) {
         var pagination = contents.pagination();
@@ -58,7 +58,7 @@ public class QualityManagerInvProvider implements InventoryProvider {
             }});
             qualityItem.setItemMeta(qualityItemMeta);
             var qualityClickableItem = ClickableItem.of(qualityItem, e -> {
-                player.getPersistentDataContainer().set(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY, PersistentDataType.STRING, quality.key.toString());
+                player.getPersistentDataContainer().set(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING, PersistentDataType.STRING, quality.key.toString());
                 if (e.isLeftClick())
                     Inventories.QUALITY_PREVIEW_INVENTORY.open(player);
                 else if (e.isRightClick())

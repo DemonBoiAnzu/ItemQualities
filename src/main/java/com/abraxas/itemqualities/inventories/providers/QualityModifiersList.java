@@ -26,12 +26,12 @@ import java.util.ArrayList;
 
 import static com.abraxas.itemqualities.utils.Utils.colorize;
 
-public class QualityModifiersListInvProvider implements InventoryProvider {
+public class QualityModifiersList implements InventoryProvider {
     ItemQualities main = ItemQualities.getInstance();
 
     @Override
     public void init(Player player, InventoryContents contents) {
-        var rawQualityPreviewingKey = player.getPersistentDataContainer().getOrDefault(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING_KEY, PersistentDataType.STRING, "").split(":");
+        var rawQualityPreviewingKey = player.getPersistentDataContainer().getOrDefault(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING, PersistentDataType.STRING, "").split(":");
         var qualityNamespace = new NamespacedKey(rawQualityPreviewingKey[0], rawQualityPreviewingKey[1]);
         var quality = QualitiesManager.getQualityById(qualityNamespace);
         if (quality == null) {

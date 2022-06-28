@@ -58,13 +58,13 @@ public class ItemListeners implements Listener {
             if (item != null) {
                 var itemMeta = item.getItemMeta();
                 if (itemMeta != null) {
-                    if (itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER) &&
+                    if (itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED, PersistentDataType.INTEGER) &&
                             !QualitiesManager.itemCanHaveQuality(item)) {
-                        itemMeta.getPersistentDataContainer().remove(Keys.ITEM_CRAFTED_KEY);
+                        itemMeta.getPersistentDataContainer().remove(Keys.ITEM_CRAFTED);
                         item.setItemMeta(itemMeta);
                     }
                     var canAdd = getConfig().applyQualityOnCraft ||
-                            !itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER);
+                            !itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED, PersistentDataType.INTEGER);
                     if (QualitiesManager.itemHasQuality(item) && canAdd) QualitiesManager.refreshItem(item);
                     if (QualitiesManager.itemCanHaveQuality(item) && !QualitiesManager.itemHasQuality(item) && canAdd)
                         QualitiesManager.addQualityToItem(item, QualitiesManager.getRandomQuality());
@@ -82,13 +82,13 @@ public class ItemListeners implements Listener {
             if (item != null) {
                 var itemMeta = item.getItemMeta();
                 if (itemMeta != null) {
-                    if (itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER) &&
+                    if (itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED, PersistentDataType.INTEGER) &&
                             !QualitiesManager.itemCanHaveQuality(item)) {
-                        itemMeta.getPersistentDataContainer().remove(Keys.ITEM_CRAFTED_KEY);
+                        itemMeta.getPersistentDataContainer().remove(Keys.ITEM_CRAFTED);
                         item.setItemMeta(itemMeta);
                     }
                     var canAdd = getConfig().applyQualityOnCraft ||
-                            !itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER);
+                            !itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED, PersistentDataType.INTEGER);
                     if (QualitiesManager.itemCanHaveQuality(item) && !QualitiesManager.itemHasQuality(item) && canAdd)
                         QualitiesManager.addQualityToItem(item, QualitiesManager.getRandomQuality());
                 }
@@ -103,7 +103,7 @@ public class ItemListeners implements Listener {
         var itemMeta = item.getItemMeta();
         if (!getConfig().applyQualityOnCraft &&
                 itemMeta != null &&
-                itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER)) return;
+                itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED, PersistentDataType.INTEGER)) return;
         if (QualitiesManager.itemCanHaveQuality(item) && !QualitiesManager.itemHasQuality(item)) {
             QualitiesManager.addQualityToItem(item, QualitiesManager.getRandomQuality());
             event.getItem().setItemStack(item);
@@ -118,7 +118,7 @@ public class ItemListeners implements Listener {
         var itemMeta = item.getItemMeta();
         if (!getConfig().applyQualityOnCraft &&
                 itemMeta != null &&
-                itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER)) return;
+                itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED, PersistentDataType.INTEGER)) return;
         if (QualitiesManager.itemHasQuality(item)) {
             QualitiesManager.refreshItem(item);
             event.setCurrentItem(item);
@@ -217,13 +217,13 @@ public class ItemListeners implements Listener {
 
         if (itemMeta.getAttributeModifiers(Attribute.GENERIC_ATTACK_DAMAGE) == null) return;
         var atkDmgMod = itemMeta.getAttributeModifiers(Attribute.GENERIC_ATTACK_DAMAGE).stream().findFirst();
-        atkDmgMod.ifPresent(attributeModifier -> proj.getPersistentDataContainer().set(Keys.ITEM_PROJECTILE_DAMAGE_KEY, PersistentDataType.DOUBLE, attributeModifier.getAmount()));
+        atkDmgMod.ifPresent(attributeModifier -> proj.getPersistentDataContainer().set(Keys.ITEM_PROJECTILE_DAMAGE, PersistentDataType.DOUBLE, attributeModifier.getAmount()));
     }
 
     @EventHandler
     public void onEntityHitByProjectile(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Projectile proj)) return;
-        var value = proj.getPersistentDataContainer().getOrDefault(Keys.ITEM_PROJECTILE_DAMAGE_KEY, PersistentDataType.DOUBLE, 0d);
+        var value = proj.getPersistentDataContainer().getOrDefault(Keys.ITEM_PROJECTILE_DAMAGE, PersistentDataType.DOUBLE, 0d);
         event.setDamage(event.getDamage() + value);
     }
 }

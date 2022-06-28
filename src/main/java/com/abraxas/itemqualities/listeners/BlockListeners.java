@@ -63,7 +63,7 @@ public class BlockListeners implements Listener {
             renameText = renameText.replace(qualityText, "");
         }
         var slot1Meta = slot1.getItemMeta();
-        slot1Meta.getPersistentDataContainer().set(Keys.ITEM_CUSTOM_NAME_KEY, PersistentDataType.STRING, renameText);
+        slot1Meta.getPersistentDataContainer().set(Keys.ITEM_CUSTOM_NAME, PersistentDataType.STRING, renameText);
         slot1.setItemMeta(slot1Meta);
         QualitiesManager.removeQualityFromItem(slot1);
         QualitiesManager.addQualityToItem(slot1, (itemsQuality != null) ? itemsQuality : QualitiesManager.getRandomQuality());
@@ -83,7 +83,7 @@ public class BlockListeners implements Listener {
             }
             if (QualitiesManager.itemCanHaveQuality(item)) {
                 itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-                itemMeta.getPersistentDataContainer().set(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER, 1);
+                itemMeta.getPersistentDataContainer().set(Keys.ITEM_CRAFTED, PersistentDataType.INTEGER, 1);
                 item.setItemMeta(itemMeta);
                 event.setResult(item);
             }
@@ -101,7 +101,7 @@ public class BlockListeners implements Listener {
             item.setItemMeta(itemMeta);
             event.setCurrentItem(item);
             if (!getConfig().applyQualityOnCraft &&
-                    itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER))
+                    itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED, PersistentDataType.INTEGER))
                 return;
             var action = event.getAction();
             if (action.equals(InventoryAction.HOTBAR_SWAP) ||
@@ -149,7 +149,7 @@ public class BlockListeners implements Listener {
         if (QualitiesManager.itemCanHaveQuality(item)) {
             var meta = item.getItemMeta();
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            meta.getPersistentDataContainer().set(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER, 1);
+            meta.getPersistentDataContainer().set(Keys.ITEM_CRAFTED, PersistentDataType.INTEGER, 1);
             item.setItemMeta(meta);
         }
         event.getInventory().setResult(item);
@@ -166,7 +166,7 @@ public class BlockListeners implements Listener {
             item.setItemMeta(itemMeta);
             event.setCurrentItem(item);
             if (!getConfig().applyQualityOnCraft &&
-                    itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED_KEY, PersistentDataType.INTEGER))
+                    itemMeta.getPersistentDataContainer().has(Keys.ITEM_CRAFTED, PersistentDataType.INTEGER))
                 return;
             var action = event.getAction();
             if (action.equals(InventoryAction.HOTBAR_SWAP) ||
@@ -277,7 +277,7 @@ public class BlockListeners implements Listener {
             return;
         }
         QualitiesManager.refreshItem(item, newQuality);
-        var customItemName = item.getItemMeta().getPersistentDataContainer().getOrDefault(Keys.ITEM_CUSTOM_NAME_KEY, PersistentDataType.STRING, "");
+        var customItemName = item.getItemMeta().getPersistentDataContainer().getOrDefault(Keys.ITEM_CUSTOM_NAME, PersistentDataType.STRING, "");
         String itemName = (!customItemName.isEmpty()) ? customItemName : new TranslatableComponent("item.minecraft.%s".formatted(item.getType().toString().toLowerCase())).toPlainText();
         if (player.getGameMode().equals(GameMode.SURVIVAL)) player.setLevel(player.getLevel() - cost);
         if (player.getGameMode().equals(GameMode.SURVIVAL))

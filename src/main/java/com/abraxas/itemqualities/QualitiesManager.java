@@ -264,11 +264,11 @@ public class QualitiesManager {
         if (itemMeta == null || !itemCanHaveQuality(itemStack) || itemHasQuality(itemStack)) return itemStack;
         if (itemMeta.getItemFlags().contains(ItemFlag.HIDE_ATTRIBUTES)) return itemStack;
 
-        itemMeta.getPersistentDataContainer().set(Keys.ITEM_QUALITY_KEY, PersistentDataType.STRING, itemQuality.key.getKey());
+        itemMeta.getPersistentDataContainer().set(Keys.ITEM_QUALITY, PersistentDataType.STRING, itemQuality.key.getKey());
 
         List<String> newLore = (itemMeta.getLore() != null) ? itemMeta.getLore() : new ArrayList<>();
         if (!getConfig().displayQualityInLore) {
-            var customItemName = itemMeta.getPersistentDataContainer().getOrDefault(Keys.ITEM_CUSTOM_NAME_KEY, PersistentDataType.STRING, "");
+            var customItemName = itemMeta.getPersistentDataContainer().getOrDefault(Keys.ITEM_CUSTOM_NAME, PersistentDataType.STRING, "");
             String itemName = (!customItemName.isEmpty()) ? customItemName : new TranslatableComponent("item.minecraft.%s".formatted(itemStack.getType().toString().toLowerCase())).toPlainText();
             itemMeta.setDisplayName(colorize(getConfig().itemQualityDisplayFormat.replace("{QUALITY}", itemQuality.display).replace("{ITEM}", itemName)));
         } else {
@@ -358,19 +358,22 @@ public class QualitiesManager {
 
         itemMeta.setLore(newLore);
 
-        defAttributes.forEach((equipmentSlot, attributeAttributeModifierMultimap) -> {
-            attributeAttributeModifierMultimap.forEach((attribute, attributeModifier) -> {
-                if (itemMeta.getAttributeModifiers() != null &&
-                        !itemMeta.getAttributeModifiers().containsKey(attribute) &&
-                        !itemMeta.getAttributeModifiers().containsValue(attributeModifier))
-                    itemMeta.addAttributeModifier(attribute, attributeModifier);
+        try {
+            defAttributes.forEach((equipmentSlot, attributeAttributeModifierMultimap) -> {
+                attributeAttributeModifierMultimap.forEach((attribute, attributeModifier) -> {
+                    if (itemMeta.getAttributeModifiers() != null &&
+                            !itemMeta.getAttributeModifiers().containsKey(attribute) &&
+                            !itemMeta.getAttributeModifiers().containsValue(attributeModifier))
+                        itemMeta.addAttributeModifier(attribute, attributeModifier);
+                });
             });
-        });
+        } catch (Exception ignored) {
+        }
 
         var maxDur = DurabilityManager.getItemMaxDurability(itemStack);
         if (itemQuality.itemMaxDurabilityMod > 0) {
             maxDur += itemQuality.itemMaxDurabilityMod;
-            itemMeta.getPersistentDataContainer().set(Keys.MAX_ITEM_DURABILITY_KEY, PersistentDataType.INTEGER, maxDur);
+            itemMeta.getPersistentDataContainer().set(Keys.MAX_ITEM_DURABILITY, PersistentDataType.INTEGER, maxDur);
         }
 
         itemStack.setItemMeta(itemMeta);
@@ -388,11 +391,11 @@ public class QualitiesManager {
         var itemMeta = itemStack.getItemMeta();
         if (itemMeta == null || !itemCanHaveQuality(itemStack) || !itemHasQuality(itemStack)) return itemStack;
 
-        itemMeta.getPersistentDataContainer().remove(Keys.ITEM_QUALITY_KEY);
-        itemMeta.getPersistentDataContainer().remove(Keys.MAX_ITEM_DURABILITY_KEY);
-        itemMeta.getPersistentDataContainer().remove(Keys.ITEM_DURABILITY_KEY);
+        itemMeta.getPersistentDataContainer().remove(Keys.ITEM_QUALITY);
+        itemMeta.getPersistentDataContainer().remove(Keys.MAX_ITEM_DURABILITY);
+        itemMeta.getPersistentDataContainer().remove(Keys.ITEM_DURABILITY);
 
-        var customItemName = itemMeta.getPersistentDataContainer().getOrDefault(Keys.ITEM_CUSTOM_NAME_KEY, PersistentDataType.STRING, "");
+        var customItemName = itemMeta.getPersistentDataContainer().getOrDefault(Keys.ITEM_CUSTOM_NAME, PersistentDataType.STRING, "");
         String itemName = (!customItemName.isEmpty()) ? customItemName : new TranslatableComponent("item.minecraft.%s".formatted(itemStack.getType().toString().toLowerCase())).toPlainText();
         itemMeta.setDisplayName(colorize("&r" + itemName));
 
@@ -447,13 +450,13 @@ public class QualitiesManager {
         if (!itemHasQuality(itemStack)) return null;
         ItemMeta meta = itemStack.getItemMeta();
         if (meta == null) return null;
-        return getQualityById(meta.getPersistentDataContainer().get(Keys.ITEM_QUALITY_KEY, PersistentDataType.STRING));
+        return getQualityById(meta.getPersistentDataContainer().get(Keys.ITEM_QUALITY, PersistentDataType.STRING));
     }
 
     public static boolean itemHasQuality(ItemStack itemStack) {
         if (itemStack.getItemMeta() == null) return false;
         ItemMeta meta = itemStack.getItemMeta();
         if (meta == null) return false;
-        return meta.getPersistentDataContainer().has(Keys.ITEM_QUALITY_KEY, PersistentDataType.STRING);
+        return meta.getPersistentDataContainer().has(Keys.ITEM_QUALITY, PersistentDataType.STRING);
     }
 }

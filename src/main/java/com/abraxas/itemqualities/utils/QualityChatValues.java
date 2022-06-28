@@ -15,4 +15,7 @@ public class QualityChatValues {
 
     public static String UPDATE_QUALITY_EXTRA_DURABILITY_LOSS = "update_quality_extra_durability_loss";
     public static String UPDATE_QUALITY_EXTRA_DURABILITY_LOSS_CHANCE = "update_quality_extra_durability_loss_chance";
+
+    public static String UPDATE_QUALITY_MODIFIER_NORMAL_AMOUNT = "update_quality_modifier_normal_amount";
+    public static String UPDATE_QUALITY_MODIFIER_SLOT_AMOUNT = "update_quality_modifier_slot_amount";
 }
