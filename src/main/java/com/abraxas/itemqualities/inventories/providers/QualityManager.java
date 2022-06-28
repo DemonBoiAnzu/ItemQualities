@@ -29,7 +29,7 @@ import java.util.List;
 import static com.abraxas.itemqualities.utils.Utils.colorize;
 import static com.abraxas.itemqualities.utils.Utils.sendMessageWithPrefix;
 
-// TODO: Finish up the editing for Modifiers and finish translations for new messages
+// TODO: Finish translations for new messages
 public class QualityManager implements InventoryProvider {
     @Override
     public void init(Player player, InventoryContents contents) {
