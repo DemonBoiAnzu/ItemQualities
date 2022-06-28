@@ -5,7 +5,7 @@ import org.bukkit.NamespacedKey;
 
 public class Keys {
     public static NamespacedKey ITEM_QUALITY;
-    public static NamespacedKey ITEM_DURABILITY;
+    public static NamespacedKey ITEM_DURABILITY; // Unused now
     public static NamespacedKey MAX_ITEM_DURABILITY;
     public static NamespacedKey ITEM_PROJECTILE_DAMAGE;
     public static NamespacedKey ITEM_CRAFTED;
@@ -20,7 +20,7 @@ public class Keys {
 
     static {
         ITEM_QUALITY = new NamespacedKey(ItemQualities.getInstance(), "item_quality");
-        ITEM_DURABILITY = new NamespacedKey(ItemQualities.getInstance(), "durability");
+        ITEM_DURABILITY = new NamespacedKey(ItemQualities.getInstance(), "durability"); // Unused now
         MAX_ITEM_DURABILITY = new NamespacedKey(ItemQualities.getInstance(), "max_durability");
         ITEM_PROJECTILE_DAMAGE = new NamespacedKey(ItemQualities.getInstance(), "projectile_damage");
         ITEM_CRAFTED = new NamespacedKey(ItemQualities.getInstance(), "crafted");

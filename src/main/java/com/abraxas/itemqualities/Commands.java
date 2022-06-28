@@ -87,6 +87,7 @@ public class Commands {
                         if (QualitiesManager.itemHasQuality(item)) QualitiesManager.removeQualityFromItem(item);
 
                         QualitiesManager.addQualityToItem(item, quality);
+                        DurabilityManager.damageItem(player, item, 0);
                         sendMessageWithPrefix(player, main.getTranslation("message.commands.items_quality_set").formatted(quality.display));
                     }));
             add(new CommandAPICommand("removeitemquality")
@@ -109,6 +110,7 @@ public class Commands {
                         var itemsQuality = QualitiesManager.getQuality(item);
 
                         QualitiesManager.removeQualityFromItem(item);
+                        DurabilityManager.damageItem(player, item, 0);
                         sendMessageWithPrefix(player, main.getTranslation("message.commands.quality_removed").formatted(itemsQuality.display));
                     }));
             add(new CommandAPICommand("managequalities")

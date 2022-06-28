@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import static com.abraxas.itemqualities.utils.Utils.colorize;
 import static com.abraxas.itemqualities.utils.Utils.sendMessageWithPrefix;
 
-public class QualityEdit implements InventoryProvider {
+public class IPQualityEdit implements InventoryProvider {
     ItemQualities main = ItemQualities.getInstance();
 
     @Override

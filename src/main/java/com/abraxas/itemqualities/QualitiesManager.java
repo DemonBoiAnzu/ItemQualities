@@ -356,8 +356,6 @@ public class QualitiesManager {
             }
         });
 
-        itemMeta.setLore(newLore);
-
         try {
             defAttributes.forEach((equipmentSlot, attributeAttributeModifierMultimap) -> {
                 attributeAttributeModifierMultimap.forEach((attribute, attributeModifier) -> {
@@ -369,12 +367,22 @@ public class QualitiesManager {
             });
         } catch (Exception ignored) {
         }
-
         var maxDur = DurabilityManager.getItemMaxDurability(itemStack);
-        if (itemQuality.itemMaxDurabilityMod > 0) {
-            maxDur += itemQuality.itemMaxDurabilityMod;
-            itemMeta.getPersistentDataContainer().set(Keys.MAX_ITEM_DURABILITY, PersistentDataType.INTEGER, maxDur);
+        maxDur += itemQuality.itemMaxDurabilityMod;
+        itemMeta.getPersistentDataContainer().set(Keys.MAX_ITEM_DURABILITY, PersistentDataType.INTEGER, maxDur);
+
+        if (maxDur != itemStack.getType().getMaxDurability()) {
+            newLore.add("");
+            var itemsCurDam = DurabilityManager.getItemDamage(itemStack);
+            var itemsRemainingDur = maxDur - itemsCurDam;
+            newLore.add(colorize("&7&oDurability: %s/%s".formatted(
+                    (itemsRemainingDur <= maxDur && itemsRemainingDur > maxDur / 2) ? "&a&o%s".formatted(itemsRemainingDur) :
+                            (itemsRemainingDur <= maxDur / 2 && itemsRemainingDur > maxDur / 3) ? "&2&o%s".formatted(itemsRemainingDur) :
+                                    (itemsRemainingDur <= maxDur / 3) ? "&c&o%s".formatted(itemsRemainingDur) : "&o%s".formatted(itemsRemainingDur), "&o%s".formatted(maxDur)
+            )));
         }
+
+        itemMeta.setLore(newLore);
 
         itemStack.setItemMeta(itemMeta);
         return itemStack;

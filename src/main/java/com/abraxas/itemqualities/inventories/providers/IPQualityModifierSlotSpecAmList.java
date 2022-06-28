@@ -3,17 +3,17 @@ package com.abraxas.itemqualities.inventories.providers;
 import com.abraxas.itemqualities.ItemQualities;
 import com.abraxas.itemqualities.QualitiesManager;
 import com.abraxas.itemqualities.api.Keys;
-import com.abraxas.itemqualities.api.Registries;
 import com.abraxas.itemqualities.inventories.Inventories;
 import com.abraxas.itemqualities.inventories.utils.InvUtils;
+import com.abraxas.itemqualities.utils.QualityChatValues;
 import com.abraxas.itemqualities.utils.Utils;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.entity.Player;
@@ -25,8 +25,9 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.ArrayList;
 
 import static com.abraxas.itemqualities.utils.Utils.colorize;
+import static com.abraxas.itemqualities.utils.Utils.sendMessageWithPrefix;
 
-public class QualityModifiersList implements InventoryProvider {
+public class IPQualityModifierSlotSpecAmList implements InventoryProvider {
     ItemQualities main = ItemQualities.getInstance();
 
     @Override
@@ -39,55 +40,38 @@ public class QualityModifiersList implements InventoryProvider {
             player.closeInventory();
             return;
         }
+        var editing = Attribute.valueOf(player.getPersistentDataContainer().getOrDefault(Keys.PLAYER_QUALITY_MODIFIER_EDITING, PersistentDataType.STRING, ""));
+        var mod = quality.modifiers.get(editing);
 
         contents.fill(ClickableItem.of(InvUtils.blankItemSecondary, InvUtils.PREVENT_PICKUP));
 
         int col = 0;
         int row = 0;
-        for (int i = 0; i < quality.modifiers.size(); i++) {
-            var attr = quality.modifiers.keySet().stream().toList().get(i);
-            var mod = quality.modifiers.get(attr);
+        for (int i = 0; i < ((mod.slotSpecificAmounts != null) ? mod.slotSpecificAmounts.size() : 0); i++) {
+            var slot = mod.slotSpecificAmounts.entrySet().stream().toList().get(i);
 
-            var attrN = attr.name().toLowerCase().replace("generic_", "generic.");
-            var attrTrans = new TranslatableComponent("attribute.name.%s".formatted(attrN));
-            var attrFinal = attrTrans.toPlainText();
-
-            var modifierItem = new ItemStack(Material.PAPER);
-            var modifierItemMeta = modifierItem.getItemMeta();
-            modifierItemMeta.setDisplayName(Utils.colorize("&r%s Modifier".formatted(attrFinal)));
-            modifierItemMeta.setLore(new ArrayList<>() {{
-                if (mod.slotSpecificAmounts == null)
-                    add(Utils.colorize("&7Amount: &e%s".formatted(mod.amount)));
-                else {
-                    mod.slotSpecificAmounts.forEach((slot, amount) -> {
-                        add(Utils.colorize("&7%s%s".formatted(slot.toString(), ": &e%s".formatted(amount))));
-                    });
-                }
-
-                if (mod.slotSpecificAmounts == null && mod.slot != null && mod.ignoredSlots == null)
-                    add(Utils.colorize("&7Slot: &e%s".formatted(mod.slot.toString())));
-                else if (mod.slotSpecificAmounts != null && mod.slot == null && mod.ignoredSlots != null) {
-                    var ignoredSlotStrings = new ArrayList<String>();
-                    mod.ignoredSlots.forEach(is -> ignoredSlotStrings.add(is.toString()));
-                    add(Utils.colorize("&7Ignored Slots: &e%s".formatted(String.join(", ", ignoredSlotStrings))));
-                }
+            var slotItem = new ItemStack(Material.PAPER);
+            var slotItemMeta = slotItem.getItemMeta();
+            slotItemMeta.setDisplayName(Utils.colorize("&7Slot Specific Amount"));
+            slotItemMeta.setLore(new ArrayList<>() {{
+                add(Utils.colorize("&7Slot: &e%s".formatted(slot.getKey().toString())));
+                add(Utils.colorize("&7Amount: &e%s".formatted(slot.getValue())));
                 add("");
-                add(Utils.colorize("&7Left-Click to Edit"));
-                add(Utils.colorize("&7Right-Click to Remove"));
+                add(colorize("&7Left-Click to Edit Amount"));
+                add(colorize("&7Right-Click to Remove"));
             }});
-            modifierItem.setItemMeta(modifierItemMeta);
+            slotItem.setItemMeta(slotItemMeta);
 
-            contents.set(row, col, ClickableItem.of(modifierItem, e -> {
+            contents.set(row, col, ClickableItem.of(slotItem, e -> {
                 e.setCancelled(true);
                 if (e.isLeftClick()) {
-                    player.getPersistentDataContainer().set(Keys.PLAYER_QUALITY_MODIFIER_EDITING, PersistentDataType.STRING, attr.toString());
-                    Inventories.QUALITY_EDIT_MODIFIER.open(player);
+                    player.getPersistentDataContainer().set(Keys.PLAYER_QUALITY_MODIFIER_EDITING_SLOT, PersistentDataType.STRING, slot.getKey().toString());
+                    player.getPersistentDataContainer().set(Keys.PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_MODIFIER_SLOT_AMOUNT);
+                    sendMessageWithPrefix(player, ItemQualities.getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("Slot amount for %s".formatted(slot.getKey())));
+                    player.closeInventory();
                 } else if (e.isRightClick()) {
-                    quality.modifiers.remove(attr);
-                    Registries.qualitiesRegistry.updateValue(quality.key, quality);
-                    QualitiesManager.saveQualityToFile(quality);
-                    player.getPersistentDataContainer().remove(Keys.PLAYER_QUALITY_MODIFIER_EDITING);
-                    Inventories.QUALITY_MODIFIERS_LIST.open(player);
+                    mod.slotSpecificAmounts.remove(slot.getKey());
+                    Inventories.QUALITY_MODIFIER_SLOT_SPEC_AM_LIST.open(player);
                 }
             }));
 
@@ -102,7 +86,7 @@ public class QualityModifiersList implements InventoryProvider {
         var newQualityItemMeta = (BannerMeta) newQualityItem.getItemMeta();
         newQualityItemMeta.setDisplayName(colorize("&aAdd New"));
         newQualityItemMeta.setLore(new ArrayList<>() {{
-            add(colorize("&7Add a new Modifier."));
+            add(colorize("&7Add a new Slot."));
         }});
         newQualityItemMeta.addPattern(new Pattern(DyeColor.LIME, PatternType.STRAIGHT_CROSS));
         newQualityItemMeta.addPattern(new Pattern(DyeColor.GREEN, PatternType.BORDER));
@@ -112,15 +96,14 @@ public class QualityModifiersList implements InventoryProvider {
         newQualityItem.setItemMeta(newQualityItemMeta);
         contents.set(row, col, ClickableItem.of(newQualityItem, e -> {
             e.setCancelled(true);
-            Inventories.QUALITY_EDIT_MODIFIER_SELECT_ATTRIBUTE.open(player);
+            Inventories.QUALITY_MODIFIER_SELECT_SLOT.open(player);
         }));
 
         contents.fillRow(2, ClickableItem.of(InvUtils.blankItem, InvUtils.PREVENT_PICKUP));
         // Go Back
         contents.set(2, 4, ClickableItem.of(InvUtils.arrowLeftBtn, e -> {
             e.setCancelled(true);
-            player.getPersistentDataContainer().remove(Keys.PLAYER_QUALITY_MODIFIER_EDITING);
-            Inventories.QUALITY_EDIT_INVENTORY.open(player);
+            Inventories.QUALITY_EDIT_MODIFIER.open(player);
         }));
     }
 

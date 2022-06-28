@@ -302,6 +302,7 @@ public class BlockListeners implements Listener {
                 block.setBlockData(dirBlockData);
             }
         } else player.getWorld().playSound(block.getLocation(), Sound.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1f, 1f);
+        DurabilityManager.damageItem(player, item, 0);
         event.setCancelled(true);
     }
 }

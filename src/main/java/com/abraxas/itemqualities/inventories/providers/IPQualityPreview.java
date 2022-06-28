@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
-public class QualityPreview implements InventoryProvider {
+public class IPQualityPreview implements InventoryProvider {
     ItemQualities main = ItemQualities.getInstance();
 
     @Override

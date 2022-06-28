@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class QualityEditModSelSlot implements InventoryProvider {
+public class IPQualityEditModSelSlot implements InventoryProvider {
     ItemQualities main = ItemQualities.getInstance();
 
     @Override

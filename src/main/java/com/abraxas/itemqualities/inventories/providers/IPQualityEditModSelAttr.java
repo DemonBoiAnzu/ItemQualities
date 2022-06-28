@@ -22,7 +22,7 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QualityEditModSelAttr implements InventoryProvider {
+public class IPQualityEditModSelAttr implements InventoryProvider {
     ItemQualities main = ItemQualities.getInstance();
 
     @Override

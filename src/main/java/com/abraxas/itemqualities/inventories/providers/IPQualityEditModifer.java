@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 import static com.abraxas.itemqualities.utils.Utils.sendMessageWithPrefix;
 
-public class QualityEditModifer implements InventoryProvider {
+public class IPQualityEditModifer implements InventoryProvider {
     ItemQualities main = ItemQualities.getInstance();
 
     @Override
