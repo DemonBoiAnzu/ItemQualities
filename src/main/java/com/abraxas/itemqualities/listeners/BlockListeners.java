@@ -63,11 +63,8 @@ public class BlockListeners implements Listener {
         var itemsQuality = getQuality(slot1);
 
         var renameText = event.getInventory().getRenameText();
-        if (itemHasQuality(slot1)) {
-            var rtSplit = renameText.split(" ");
-            var qualityText = (rtSplit[0].equals(stripColor(colorize(itemsQuality.display)))) ? rtSplit[0] + " " : "";
-            renameText = renameText.replace(qualityText, "");
-        }
+        if (itemHasQuality(slot1))
+            renameText = renameText.replaceAll(stripColor(colorize(itemsQuality.display)) + " ", "");
         var slot1Meta = slot1.getItemMeta();
         slot1Meta.getPersistentDataContainer().set(ITEM_CUSTOM_NAME, STRING, renameText);
         slot1.setItemMeta(slot1Meta);
