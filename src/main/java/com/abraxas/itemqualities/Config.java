@@ -1,9 +1,10 @@
 package com.abraxas.itemqualities;
 
-import com.abraxas.itemqualities.api.APIUtils;
 import org.bukkit.Material;
 
 import java.util.*;
+
+import static com.abraxas.itemqualities.api.APIUtils.getGson;
 
 public class Config {
     public boolean debugMode = true;
@@ -14,6 +15,7 @@ public class Config {
     public boolean newUpdateMessageOnReload = true;
     public boolean newUpdateMessageOnJoin = true;
     public boolean applyQualityOnCraft = true;
+    public boolean rerollQualityOnSmith = false;
     public boolean reforgeStationEnabled = true;
     public boolean damageAnvilOnReforge = true;
     public boolean reforgeTierDependsOnAnvilDamage = true;
@@ -90,10 +92,10 @@ public class Config {
     }};
 
     public static Config deserialize(String json) {
-        return APIUtils.getGson().fromJson(json, Config.class);
+        return getGson().fromJson(json, Config.class);
     }
 
     public static String serialize(Config item) {
-        return APIUtils.getGson().toJson(item, Config.class);
+        return getGson().toJson(item, Config.class);
     }
 }

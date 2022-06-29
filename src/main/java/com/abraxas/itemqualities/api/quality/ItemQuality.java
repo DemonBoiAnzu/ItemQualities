@@ -1,12 +1,13 @@
 package com.abraxas.itemqualities.api.quality;
 
-import com.abraxas.itemqualities.api.APIUtils;
 import com.abraxas.itemqualities.api.QualityAttributeModifier;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.abraxas.itemqualities.api.APIUtils.getGson;
 
 public class ItemQuality {
     public transient NamespacedKey key;
@@ -35,10 +36,10 @@ public class ItemQuality {
     }
 
     public static ItemQuality deserialize(String json) {
-        return APIUtils.getGson().fromJson(json, ItemQuality.class);
+        return getGson().fromJson(json, ItemQuality.class);
     }
 
     public static String serialize(ItemQuality item) {
-        return APIUtils.getGson().toJson(item, ItemQuality.class);
+        return getGson().toJson(item, ItemQuality.class);
     }
 }

@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.util.ResourceBundle;
 
 import static com.abraxas.itemqualities.utils.Utils.log;
+import static com.abraxas.itemqualities.utils.Utils.registerEvents;
 
 public final class ItemQualities extends JavaPlugin {
     private static ItemQualities instance;
@@ -51,9 +52,9 @@ public final class ItemQualities extends JavaPlugin {
 
         Commands.register();
 
-        Utils.registerEvents(new ItemListeners());
-        Utils.registerEvents(new BlockListeners());
-        Utils.registerEvents(new ServerListeners());
+        registerEvents(new ItemListeners());
+        registerEvents(new BlockListeners());
+        registerEvents(new ServerListeners());
 
         UpdateChecker.checkForNewVersion();
 

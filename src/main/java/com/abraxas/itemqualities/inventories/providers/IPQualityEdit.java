@@ -2,19 +2,15 @@ package com.abraxas.itemqualities.inventories.providers;
 
 import com.abraxas.itemqualities.ItemQualities;
 import com.abraxas.itemqualities.QualitiesManager;
-import com.abraxas.itemqualities.api.Keys;
 import com.abraxas.itemqualities.inventories.Inventories;
 import com.abraxas.itemqualities.inventories.utils.InvUtils;
 import com.abraxas.itemqualities.utils.QualityChatValues;
-import com.abraxas.itemqualities.utils.Utils;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.banner.Pattern;
-import org.bukkit.block.banner.PatternType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -23,24 +19,34 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 
+import static com.abraxas.itemqualities.ItemQualities.getInstance;
+import static com.abraxas.itemqualities.api.Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING;
+import static com.abraxas.itemqualities.api.Keys.PLAYER_TYPING_VALUE_KEY;
+import static com.abraxas.itemqualities.inventories.Inventories.QUALITY_MANAGER_INVENTORY;
+import static com.abraxas.itemqualities.inventories.utils.InvUtils.*;
 import static com.abraxas.itemqualities.utils.Utils.colorize;
 import static com.abraxas.itemqualities.utils.Utils.sendMessageWithPrefix;
+import static org.bukkit.DyeColor.LIGHT_GRAY;
+import static org.bukkit.DyeColor.RED;
+import static org.bukkit.Material.LIGHT_GRAY_BANNER;
+import static org.bukkit.block.banner.PatternType.*;
+import static org.bukkit.inventory.ItemFlag.HIDE_POTION_EFFECTS;
 
 public class IPQualityEdit implements InventoryProvider {
-    ItemQualities main = ItemQualities.getInstance();
+    ItemQualities main = getInstance();
 
     @Override
     public void init(Player player, InventoryContents contents) {
-        var rawQualityPreviewingKey = player.getPersistentDataContainer().getOrDefault(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING, PersistentDataType.STRING, "").split(":");
+        var rawQualityPreviewingKey = player.getPersistentDataContainer().getOrDefault(PLAYER_QUALITY_EDITING_OR_PREVIEWING, PersistentDataType.STRING, "").split(":");
         var qualityNamespace = new NamespacedKey(rawQualityPreviewingKey[0], rawQualityPreviewingKey[1]);
         var quality = QualitiesManager.getQualityById(qualityNamespace);
         if (quality == null) {
-            Utils.sendMessageWithPrefix(player, main.getTranslation("message.plugin.error"));
+            sendMessageWithPrefix(player, main.getTranslation("message.plugin.error"));
             player.closeInventory();
             return;
         }
 
-        contents.fill(ClickableItem.of(InvUtils.blankItemSecondary, InvUtils.PREVENT_PICKUP));
+        contents.fill(ClickableItem.of(blankItemSecondary, PREVENT_PICKUP));
 
         // General Quality Attributes
         var editId = new ItemStack(Material.PAPER);
@@ -54,8 +60,8 @@ public class IPQualityEdit implements InventoryProvider {
         editId.setItemMeta(editIdMeta);
         contents.set(0, 0, ClickableItem.of(editId, e -> {
             e.setCancelled(true);
-            player.getPersistentDataContainer().set(Keys.PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_ID);
-            sendMessageWithPrefix(player, ItemQualities.getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("ID"));
+            player.getPersistentDataContainer().set(PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_ID);
+            sendMessageWithPrefix(player, getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("ID"));
             player.closeInventory();
         }));
 
@@ -70,8 +76,8 @@ public class IPQualityEdit implements InventoryProvider {
         editDisplay.setItemMeta(editDisplayMeta);
         contents.set(0, 1, ClickableItem.of(editDisplay, e -> {
             e.setCancelled(true);
-            player.getPersistentDataContainer().set(Keys.PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_DISPLAY);
-            sendMessageWithPrefix(player, ItemQualities.getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("Display"));
+            player.getPersistentDataContainer().set(PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_DISPLAY);
+            sendMessageWithPrefix(player, getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("Display"));
             player.closeInventory();
         }));
 
@@ -86,8 +92,8 @@ public class IPQualityEdit implements InventoryProvider {
         editTier.setItemMeta(editTierMeta);
         contents.set(0, 2, ClickableItem.of(editTier, e -> {
             e.setCancelled(true);
-            player.getPersistentDataContainer().set(Keys.PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_TIER);
-            sendMessageWithPrefix(player, ItemQualities.getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("Tier"));
+            player.getPersistentDataContainer().set(PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_TIER);
+            sendMessageWithPrefix(player, getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("Tier"));
             player.closeInventory();
         }));
 
@@ -102,8 +108,8 @@ public class IPQualityEdit implements InventoryProvider {
         editAddChance.setItemMeta(editAddChanceMeta);
         contents.set(0, 3, ClickableItem.of(editAddChance, e -> {
             e.setCancelled(true);
-            player.getPersistentDataContainer().set(Keys.PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_ADD_CHANCE);
-            sendMessageWithPrefix(player, ItemQualities.getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("Add Chance"));
+            player.getPersistentDataContainer().set(PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_ADD_CHANCE);
+            sendMessageWithPrefix(player, getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("Add Chance"));
             player.closeInventory();
         }));
 
@@ -120,8 +126,8 @@ public class IPQualityEdit implements InventoryProvider {
         editNoDropsChance.setItemMeta(editNoDropsChanceMeta);
         contents.set(0, 3, ClickableItem.of(editNoDropsChance, e -> {
             e.setCancelled(true);
-            player.getPersistentDataContainer().set(Keys.PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_NO_DROPS_CHANCE);
-            sendMessageWithPrefix(player, ItemQualities.getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("No Drops Chance"));
+            player.getPersistentDataContainer().set(PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_NO_DROPS_CHANCE);
+            sendMessageWithPrefix(player, getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("No Drops Chance"));
             player.closeInventory();
         }));
 
@@ -136,8 +142,8 @@ public class IPQualityEdit implements InventoryProvider {
         editDoubleDropsChance.setItemMeta(editDoubleDropsChanceMeta);
         contents.set(0, 4, ClickableItem.of(editDoubleDropsChance, e -> {
             e.setCancelled(true);
-            player.getPersistentDataContainer().set(Keys.PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_DOUBLE_DROPS_CHANCE);
-            sendMessageWithPrefix(player, ItemQualities.getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("Double Drops Chance"));
+            player.getPersistentDataContainer().set(PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_DOUBLE_DROPS_CHANCE);
+            sendMessageWithPrefix(player, getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("Double Drops Chance"));
             player.closeInventory();
         }));
 
@@ -152,8 +158,8 @@ public class IPQualityEdit implements InventoryProvider {
         editMaxDurabilityMod.setItemMeta(editMaxDurabilityModMeta);
         contents.set(0, 5, ClickableItem.of(editMaxDurabilityMod, e -> {
             e.setCancelled(true);
-            player.getPersistentDataContainer().set(Keys.PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_MAX_DURABILITY_MOD);
-            sendMessageWithPrefix(player, ItemQualities.getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("Max Durability Mod"));
+            player.getPersistentDataContainer().set(PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_MAX_DURABILITY_MOD);
+            sendMessageWithPrefix(player, getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("Max Durability Mod"));
             player.closeInventory();
         }));
 
@@ -168,8 +174,8 @@ public class IPQualityEdit implements InventoryProvider {
         editNoDurabilityLossChance.setItemMeta(editNoDurabilityLossChanceMeta);
         contents.set(0, 6, ClickableItem.of(editNoDurabilityLossChance, e -> {
             e.setCancelled(true);
-            player.getPersistentDataContainer().set(Keys.PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_NO_DURABILITY_LOSS_CHANCE);
-            sendMessageWithPrefix(player, ItemQualities.getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("No Durability Loss Chance"));
+            player.getPersistentDataContainer().set(PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_NO_DURABILITY_LOSS_CHANCE);
+            sendMessageWithPrefix(player, getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("No Durability Loss Chance"));
             player.closeInventory();
         }));
 
@@ -184,8 +190,8 @@ public class IPQualityEdit implements InventoryProvider {
         editExtraDurabilityLoss.setItemMeta(editExtraDurabilityLossMeta);
         contents.set(0, 7, ClickableItem.of(editExtraDurabilityLoss, e -> {
             e.setCancelled(true);
-            player.getPersistentDataContainer().set(Keys.PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_EXTRA_DURABILITY_LOSS);
-            sendMessageWithPrefix(player, ItemQualities.getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("Extra Durability Loss"));
+            player.getPersistentDataContainer().set(PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_EXTRA_DURABILITY_LOSS);
+            sendMessageWithPrefix(player, getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("Extra Durability Loss"));
             player.closeInventory();
         }));
 
@@ -200,8 +206,8 @@ public class IPQualityEdit implements InventoryProvider {
         editExtraDurabilityLossChance.setItemMeta(editExtraDurabilityLossChanceMeta);
         contents.set(0, 8, ClickableItem.of(editExtraDurabilityLossChance, e -> {
             e.setCancelled(true);
-            player.getPersistentDataContainer().set(Keys.PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_EXTRA_DURABILITY_LOSS_CHANCE);
-            sendMessageWithPrefix(player, ItemQualities.getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("Extra Durability Loss Chance"));
+            player.getPersistentDataContainer().set(PLAYER_TYPING_VALUE_KEY, PersistentDataType.STRING, QualityChatValues.UPDATE_QUALITY_EXTRA_DURABILITY_LOSS_CHANCE);
+            sendMessageWithPrefix(player, getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("Extra Durability Loss Chance"));
             player.closeInventory();
         }));
 
@@ -219,33 +225,33 @@ public class IPQualityEdit implements InventoryProvider {
         }));
 
 
-        contents.fillRow(2, ClickableItem.of(InvUtils.blankItem, InvUtils.PREVENT_PICKUP));
+        contents.fillRow(2, ClickableItem.of(blankItem, PREVENT_PICKUP));
         // Go Back
         contents.set(2, 4, ClickableItem.of(InvUtils.arrowLeftBtn, e -> {
             e.setCancelled(true);
-            player.getPersistentDataContainer().remove(Keys.PLAYER_TYPING_VALUE_KEY);
-            player.getPersistentDataContainer().remove(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING);
-            Inventories.QUALITY_MANAGER_INVENTORY.open(player, 0);
+            player.getPersistentDataContainer().remove(PLAYER_TYPING_VALUE_KEY);
+            player.getPersistentDataContainer().remove(PLAYER_QUALITY_EDITING_OR_PREVIEWING);
+            QUALITY_MANAGER_INVENTORY.open(player, 0);
         }));
 
-        var deleteBtn = new ItemStack(Material.LIGHT_GRAY_BANNER);
+        var deleteBtn = new ItemStack(LIGHT_GRAY_BANNER);
         var deleteBtnMeta = (BannerMeta) deleteBtn.getItemMeta();
-        deleteBtnMeta.addPattern(new Pattern(DyeColor.RED, PatternType.STRIPE_DOWNRIGHT));
-        deleteBtnMeta.addPattern(new Pattern(DyeColor.RED, PatternType.STRIPE_DOWNLEFT));
-        deleteBtnMeta.addPattern(new Pattern(DyeColor.LIGHT_GRAY, PatternType.CURLY_BORDER));
+        deleteBtnMeta.addPattern(new Pattern(RED, STRIPE_DOWNRIGHT));
+        deleteBtnMeta.addPattern(new Pattern(RED, STRIPE_DOWNLEFT));
+        deleteBtnMeta.addPattern(new Pattern(LIGHT_GRAY, CURLY_BORDER));
         deleteBtnMeta.setDisplayName(colorize("&c&lDelete Quality"));
         deleteBtnMeta.setLore(new ArrayList<>() {{
             add(colorize("&4Warning: &cYou can NOT undo this."));
             add(colorize("&conly click this if you are SURE."));
         }});
-        deleteBtnMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS); // Wtf mojang
+        deleteBtnMeta.addItemFlags(HIDE_POTION_EFFECTS); // Wtf mojang
         deleteBtn.setItemMeta(deleteBtnMeta);
         contents.set(2, 8, ClickableItem.of(deleteBtn, e -> {
             e.setCancelled(true);
             QualitiesManager.deleteQuality(quality);
-            player.getPersistentDataContainer().remove(Keys.PLAYER_TYPING_VALUE_KEY);
-            player.getPersistentDataContainer().remove(Keys.PLAYER_QUALITY_EDITING_OR_PREVIEWING);
-            Inventories.QUALITY_MANAGER_INVENTORY.open(player, 0);
+            player.getPersistentDataContainer().remove(PLAYER_TYPING_VALUE_KEY);
+            player.getPersistentDataContainer().remove(PLAYER_QUALITY_EDITING_OR_PREVIEWING);
+            QUALITY_MANAGER_INVENTORY.open(player, 0);
         }));
     }
 

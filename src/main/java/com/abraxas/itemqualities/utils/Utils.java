@@ -1,11 +1,8 @@
 package com.abraxas.itemqualities.utils;
 
 import com.abraxas.itemqualities.Config;
-import com.abraxas.itemqualities.ItemQualities;
-import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang3.text.WordUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -13,9 +10,17 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import static com.abraxas.itemqualities.ItemQualities.getInstance;
+import static com.abraxas.itemqualities.utils.Permissions.MANAGE_QUALITIES_PERMISSION;
+import static com.abraxas.itemqualities.utils.Permissions.USE_REFORGE_PERMISSION;
+import static java.util.regex.Pattern.compile;
+import static net.md_5.bungee.api.ChatColor.of;
+import static net.md_5.bungee.api.ChatColor.translateAlternateColorCodes;
+import static org.apache.commons.lang3.text.WordUtils.capitalize;
+import static org.bukkit.Bukkit.getPluginManager;
+import static org.bukkit.Material.SHIELD;
+import static org.bukkit.Tag.*;
 import static org.bukkit.inventory.EquipmentSlot.*;
 
 public class Utils {
@@ -26,38 +31,49 @@ public class Utils {
     }
 
     public static String colorize(String string) {
-        Pattern HEX_PATTERN = Pattern.compile("<#([A-Fa-f0-9]){6}>");
-        Matcher matcher = HEX_PATTERN.matcher(string);
+        var HEX_PATTERN = compile("<#([A-Fa-f0-9]){6}>");
+        var matcher = HEX_PATTERN.matcher(string);
         while (matcher.find()) {
-            final net.md_5.bungee.api.ChatColor hexColor = net.md_5.bungee.api.ChatColor.of(matcher.group().substring(1, matcher.group().length() - 1));
-            final String before = string.substring(0, matcher.start());
-            final String after = string.substring(matcher.end());
+            final var hexColor = of(matcher.group().substring(1, matcher.group().length() - 1));
+            final var before = string.substring(0, matcher.start());
+            final var after = string.substring(matcher.end());
             string = before + hexColor + after;
             matcher = HEX_PATTERN.matcher(string);
         }
-        return ChatColor.translateAlternateColorCodes('&', string);
+        return translateAlternateColorCodes('&', string);
     }
 
     public static String formalizedString(String string) {
-        return WordUtils.capitalize(string.toLowerCase().replace("_", " "));
+        return capitalize(string.toLowerCase().replace("_", " "));
     }
 
     public static void registerEvents(Listener listener) {
-        ItemQualities.getInstance().getServer().getPluginManager().registerEvents(listener, ItemQualities.getInstance());
+        getInstance().getServer().getPluginManager().registerEvents(listener, getInstance());
     }
 
     public static boolean canUseReforge(Player player) {
-        var perm = Bukkit.getPluginManager().getPermission(Permissions.USE_REFORGE_PERMISSION);
+        var perm = getPluginManager().getPermission(USE_REFORGE_PERMISSION);
         return player.isOp() || (perm != null && player.hasPermission(perm));
     }
 
     public static boolean canUseQualityManager(Player player) {
-        var perm = Bukkit.getPluginManager().getPermission(Permissions.MANAGE_QUALITIES_PERMISSION);
+        var perm = getPluginManager().getPermission(MANAGE_QUALITIES_PERMISSION);
         return player.isOp() || (perm != null && player.hasPermission(perm));
     }
 
     public static boolean chanceOf(int chance) {
         return random.nextInt(100) <= chance;
+    }
+
+    public static boolean isOre(Block block) {
+        return DIAMOND_ORES.isTagged(block.getType()) ||
+                LAPIS_ORES.isTagged(block.getType()) ||
+                COPPER_ORES.isTagged(block.getType()) ||
+                GOLD_ORES.isTagged(block.getType()) ||
+                IRON_ORES.isTagged(block.getType()) ||
+                EMERALD_ORES.isTagged(block.getType()) ||
+                REDSTONE_ORES.isTagged(block.getType()) ||
+                COAL_ORES.isTagged(block.getType());
     }
 
     public static EquipmentSlot getItemsMainSlot(ItemStack itemStack) {
@@ -103,7 +119,7 @@ public class Utils {
     }
 
     public static boolean isOffhandItem(ItemStack itemStack) {
-        return itemStack.getType().equals(Material.SHIELD);
+        return itemStack.getType().equals(SHIELD);
     }
 
     public static boolean isMeleeWeapon(ItemStack itemStack) {
@@ -122,7 +138,7 @@ public class Utils {
     }
 
     public static void log(String message) {
-        ItemQualities.getInstance().getLogger().info(colorize(message));
+        getInstance().getLogger().info(colorize(message));
     }
 
     public static void sendMessageWithoutPrefix(CommandSender receiver, String message) {
@@ -138,6 +154,6 @@ public class Utils {
     }
 
     public static Config getConfig() {
-        return ItemQualities.getInstance().getConfiguration();
+        return getInstance().getConfiguration();
     }
 }

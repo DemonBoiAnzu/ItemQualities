@@ -5,7 +5,6 @@ import com.abraxas.itemqualities.api.Registries;
 import com.abraxas.itemqualities.inventories.Inventories;
 import com.abraxas.itemqualities.utils.Permissions;
 import com.abraxas.itemqualities.utils.UpdateChecker;
-import com.abraxas.itemqualities.utils.Utils;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
@@ -44,17 +43,17 @@ public class Commands {
                     .executesPlayer((player, args) -> {
                         var item = player.getInventory().getItemInMainHand();
                         if (item.getType().equals(Material.AIR)) {
-                            Utils.sendMessageWithPrefix(player, main.getTranslation("message.commands.must_hold_item"));
+                            sendMessageWithPrefix(player, main.getTranslation("message.commands.must_hold_item"));
                             return;
                         }
                         var itemMeta = item.getItemMeta();
                         if (!(itemMeta instanceof Damageable)) {
-                            Utils.sendMessageWithPrefix(player, main.getTranslation("message.commands.item_cant_be_repaired"));
+                            sendMessageWithPrefix(player, main.getTranslation("message.commands.item_cant_be_repaired"));
                             return;
                         }
                         String itemName = new TranslatableComponent("item.minecraft.%s".formatted(item.getType().toString().toLowerCase())).toPlainText();
                         DurabilityManager.repairItem(item);
-                        Utils.sendMessageWithPrefix(player, main.getTranslation("message.commands.item_repaired").formatted(itemName));
+                        sendMessageWithPrefix(player, main.getTranslation("message.commands.item_repaired").formatted(itemName));
                     }));
             add(new CommandAPICommand("setitemquality")
                     .withPermission(Permissions.SET_ITEMS_QUALITY_PERMISSION)
@@ -71,7 +70,7 @@ public class Commands {
                     .executesPlayer((player, args) -> {
                         var item = player.getInventory().getItemInMainHand();
                         if (item.getType().equals(Material.AIR)) {
-                            Utils.sendMessageWithPrefix(player, main.getTranslation("message.commands.must_hold_item"));
+                            sendMessageWithPrefix(player, main.getTranslation("message.commands.must_hold_item"));
                             return;
                         }
                         var qualArgString = (String) args[0];
@@ -95,7 +94,7 @@ public class Commands {
                     .executesPlayer((player, args) -> {
                         var item = player.getInventory().getItemInMainHand();
                         if (item.getType().equals(Material.AIR)) {
-                            Utils.sendMessageWithPrefix(player, main.getTranslation("message.commands.must_hold_item"));
+                            sendMessageWithPrefix(player, main.getTranslation("message.commands.must_hold_item"));
                             return;
                         }
                         if (!QualitiesManager.itemCanHaveQuality(item)) {

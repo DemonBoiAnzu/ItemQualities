@@ -263,6 +263,7 @@ public class QualitiesManager {
         var itemMeta = itemStack.getItemMeta();
         if (itemMeta == null || !itemCanHaveQuality(itemStack) || itemHasQuality(itemStack)) return itemStack;
         if (itemMeta.getItemFlags().contains(ItemFlag.HIDE_ATTRIBUTES)) return itemStack;
+        if (itemQuality == null) return itemStack;
 
         itemMeta.getPersistentDataContainer().set(Keys.ITEM_QUALITY, PersistentDataType.STRING, itemQuality.key.getKey());
 

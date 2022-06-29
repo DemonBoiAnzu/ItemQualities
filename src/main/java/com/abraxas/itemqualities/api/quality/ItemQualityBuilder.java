@@ -1,11 +1,12 @@
 package com.abraxas.itemqualities.api.quality;
 
 import com.abraxas.itemqualities.api.QualityAttributeModifier;
-import com.abraxas.itemqualities.api.Registries;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 
 import java.util.Map;
+
+import static com.abraxas.itemqualities.api.Registries.qualitiesRegistry;
 
 public class ItemQualityBuilder {
     ItemQuality itemQuality;
@@ -55,6 +56,6 @@ public class ItemQualityBuilder {
     }
 
     public ItemQuality buildAndRegister() {
-        return Registries.qualitiesRegistry.register(itemQuality.key, itemQuality);
+        return qualitiesRegistry.register(itemQuality.key, itemQuality);
     }
 }

@@ -1,29 +1,29 @@
 package com.abraxas.itemqualities.api;
 
 import com.abraxas.itemqualities.ItemQualities;
-import com.abraxas.itemqualities.QualitiesManager;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import static com.abraxas.itemqualities.QualitiesManager.*;
+import static com.abraxas.itemqualities.api.Keys.ITEM_DURABILITY;
+import static com.abraxas.itemqualities.api.Keys.MAX_ITEM_DURABILITY;
+import static org.bukkit.GameMode.SURVIVAL;
+import static org.bukkit.Material.AIR;
+import static org.bukkit.Sound.ENTITY_ITEM_BREAK;
+import static org.bukkit.SoundCategory.PLAYERS;
+import static org.bukkit.persistence.PersistentDataType.INTEGER;
 
 public class DurabilityManager {
     public static int getItemCustomMaxDurability(ItemStack itemStack) {
         var meta = itemStack.getItemMeta();
         if (meta == null) return 0;
 
-        return meta.getPersistentDataContainer().getOrDefault(Keys.MAX_ITEM_DURABILITY, PersistentDataType.INTEGER, 0);
-    }
-
-    public static int getItemCustomDamage(ItemStack itemStack) {
-        var meta = itemStack.getItemMeta();
-        if (meta == null) return 0;
-
-        return meta.getPersistentDataContainer().getOrDefault(Keys.ITEM_DURABILITY, PersistentDataType.INTEGER, 0);
+        return meta.getPersistentDataContainer().getOrDefault(MAX_ITEM_DURABILITY, INTEGER, 0);
     }
 
     public static int getItemMaxDurability(ItemStack itemStack) {
@@ -32,7 +32,6 @@ public class DurabilityManager {
     }
 
     public static int getItemDamage(ItemStack itemStack) {
-        //if (getItemCustomDamage(itemStack) > 0) return getItemCustomDamage(itemStack);
         var itemMeta = itemStack.getItemMeta();
         if (itemMeta == null) return 0;
         if (!(itemMeta instanceof Damageable damageable)) return 0;
@@ -41,7 +40,7 @@ public class DurabilityManager {
 
     public static void damageItem(Player player, ItemStack itemStack, int damage) {
         ItemMeta meta = itemStack.getItemMeta();
-        if (!player.getGameMode().equals(GameMode.SURVIVAL)) return;
+        if (!player.getGameMode().equals(SURVIVAL)) return;
         if (meta == null) return;
         if (!(meta instanceof Damageable damageable)) return;
         int curDamage = getItemDamage(itemStack);
@@ -51,8 +50,8 @@ public class DurabilityManager {
         //  this is so we're not clogging the data container with unused keys, eventually this code
         //  and the key itself will be removed (1.0.8 possibly)
         // TODO: Remove this and key next update
-        if (damageable.getPersistentDataContainer().has(Keys.ITEM_DURABILITY, PersistentDataType.INTEGER))
-            damageable.getPersistentDataContainer().remove(Keys.ITEM_DURABILITY);
+        if (damageable.getPersistentDataContainer().has(ITEM_DURABILITY, INTEGER))
+            damageable.getPersistentDataContainer().remove(ITEM_DURABILITY);
 
         if (maxDur == itemStack.getType().getMaxDurability()) {
             curDamage += damage;
@@ -79,14 +78,14 @@ public class DurabilityManager {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (itemStack.getType().equals(Material.AIR)) {
+                if (itemStack.getType().equals(AIR)) {
                     cancel();
                     return;
                 }
                 PlayerItemBreakEvent playerItemBreakEvent = new PlayerItemBreakEvent(player, itemStack);
                 Bukkit.getPluginManager().callEvent(playerItemBreakEvent);
                 itemStack.setAmount(0);
-                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, SoundCategory.PLAYERS, 1, 1);
+                player.getWorld().playSound(player.getLocation(), ENTITY_ITEM_BREAK, PLAYERS, 1, 1);
             }
         }.runTaskLater(ItemQualities.getInstance(), 3);
     }
@@ -105,8 +104,8 @@ public class DurabilityManager {
         var curDamage = getItemDamage(itemStack);
         damageable.setDamage(curDamage - amount);
         itemStack.setItemMeta(damageable);
-        var itemsQuality = QualitiesManager.getQuality(itemStack);
-        QualitiesManager.removeQualityFromItem(itemStack);
-        QualitiesManager.addQualityToItem(itemStack, itemsQuality);
+        var itemsQuality = getQuality(itemStack);
+        removeQualityFromItem(itemStack);
+        addQualityToItem(itemStack, itemsQuality);
     }
 }

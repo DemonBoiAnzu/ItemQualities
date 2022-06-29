@@ -1,16 +1,17 @@
 package com.abraxas.itemqualities.api;
 
-import com.abraxas.itemqualities.utils.Utils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+
+import static com.abraxas.itemqualities.utils.Utils.getItemsMainSlot;
+import static java.util.UUID.randomUUID;
+import static org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER;
 
 public class QualityAttributeModifier implements Serializable {
     public double amount;
@@ -42,11 +43,11 @@ public class QualityAttributeModifier implements Serializable {
     }
 
     public AttributeModifier getModifier(ItemStack itemStack, Attribute attr) {
-        return new AttributeModifier(UUID.randomUUID(), attr.getKey().toString(), getAmount(getSlot(itemStack)), Operation.ADD_NUMBER, getSlot(itemStack));
+        return new AttributeModifier(randomUUID(), attr.getKey().toString(), getAmount(getSlot(itemStack)), ADD_NUMBER, getSlot(itemStack));
     }
 
     public EquipmentSlot getSlot(ItemStack itemStack) {
-        if (slot == null) return Utils.getItemsMainSlot(itemStack);
+        if (slot == null) return getItemsMainSlot(itemStack);
         return slot;
     }
 
