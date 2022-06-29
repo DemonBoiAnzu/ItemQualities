@@ -2,7 +2,6 @@ package com.abraxas.itemqualities;
 
 import com.abraxas.itemqualities.api.ItemQualityComparator;
 import com.abraxas.itemqualities.api.QualityAttributeModifier;
-import com.abraxas.itemqualities.api.Registries;
 import com.abraxas.itemqualities.api.quality.ItemQuality;
 import com.abraxas.itemqualities.api.quality.ItemQualityBuilder;
 import com.abraxas.itemqualities.utils.Utils;
@@ -28,6 +27,7 @@ import java.util.*;
 import static com.abraxas.itemqualities.api.DurabilityManager.getItemDamage;
 import static com.abraxas.itemqualities.api.DurabilityManager.getItemMaxDurability;
 import static com.abraxas.itemqualities.api.Keys.*;
+import static com.abraxas.itemqualities.api.Registries.qualitiesRegistry;
 import static com.abraxas.itemqualities.utils.Utils.*;
 import static org.bukkit.inventory.EquipmentSlot.*;
 import static org.bukkit.persistence.PersistentDataType.INTEGER;
@@ -176,10 +176,10 @@ public class QualitiesManager {
                         }
                     }
 
-                    Registries.qualitiesRegistry.unregister(i.key);
+                    qualitiesRegistry.unregister(i.key);
                 });
             }
-            Registries.qualitiesRegistry.getRegistry().clear();
+            qualitiesRegistry.getRegistry().clear();
 
             Utils.log(main.getTranslation("message.plugin.loading_local_quality_files"));
             var qualities = Files.list(Path.of("%s/qualities".formatted(main.getDataFolder()))).toList();
@@ -232,12 +232,12 @@ public class QualitiesManager {
     public static void register(ItemQuality quality) {
         if (getConfig().debugMode)
             Utils.log(main.getTranslation("message.plugin.registering_quality").formatted(quality.key));
-        if (Registries.qualitiesRegistry.contains(quality.key)) {
+        if (qualitiesRegistry.contains(quality.key)) {
             if (getConfig().debugMode)
                 Utils.log(main.getTranslation("message.plugin.quality_already_exists").formatted(quality.key));
             return;
         }
-        Registries.qualitiesRegistry.register(quality.key, quality);
+        qualitiesRegistry.register(quality.key, quality);
         if (getConfig().debugMode)
             Utils.log(main.getTranslation("message.plugin.quality_registered").formatted(quality.key));
     }
@@ -247,6 +247,8 @@ public class QualitiesManager {
             var path = Path.of("%s/qualities/%s.json".formatted(main.getDataFolder(),
                     (!itemQuality.key.getNamespace().equals("itemqualities")) ? "%s/%s".formatted(itemQuality.key.getNamespace(), itemQuality.key.getKey()) :
                             itemQuality.key.getKey()));
+            File file = new File(path.toString());
+            if (!file.exists()) file.getParentFile().mkdir();
             Files.writeString(path, ItemQuality.serialize(itemQuality));
         } catch (IOException e) {
             e.printStackTrace();
@@ -259,7 +261,7 @@ public class QualitiesManager {
                     (!itemQuality.key.getNamespace().equals("itemqualities")) ? "%s/%s".formatted(itemQuality.key.getNamespace(), itemQuality.key.getKey()) :
                             itemQuality.key.getKey()));
             Files.delete(path);
-            Registries.qualitiesRegistry.unregister(itemQuality.key);
+            qualitiesRegistry.unregister(itemQuality.key);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -447,7 +449,7 @@ public class QualitiesManager {
 
     public static ItemQuality getRandomQuality(ItemQuality exclude) {
         List<ItemQuality> itemQualities = new ArrayList<>() {{
-            addAll(Registries.qualitiesRegistry.getRegistry().values());
+            addAll(qualitiesRegistry.getRegistry().values());
         }};
         itemQualities.sort(new ItemQualityComparator());
         Collections.reverse(itemQualities);
@@ -461,14 +463,14 @@ public class QualitiesManager {
     }
 
     public static ItemQuality getQualityById(String id) {
-        for (NamespacedKey key : Registries.qualitiesRegistry.getRegistry().keySet()) {
-            if (key.getKey().equals(id)) return Registries.qualitiesRegistry.get(key);
+        for (NamespacedKey key : qualitiesRegistry.getRegistry().keySet()) {
+            if (key.getKey().equals(id)) return qualitiesRegistry.get(key);
         }
         return null;
     }
 
     public static ItemQuality getQualityById(NamespacedKey id) {
-        return Registries.qualitiesRegistry.get(id);
+        return qualitiesRegistry.get(id);
     }
 
     public static ItemQuality getQuality(ItemStack itemStack) {

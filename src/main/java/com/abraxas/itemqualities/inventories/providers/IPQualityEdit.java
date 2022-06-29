@@ -61,6 +61,7 @@ public class IPQualityEdit implements InventoryProvider {
             e.setCancelled(true);
             player.getPersistentDataContainer().set(PLAYER_TYPING_VALUE_KEY, STRING, UPDATE_QUALITY_ID);
             sendMessageWithPrefix(player, getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("ID"));
+            sendMessageWithPrefix(player, getInstance().getTranslation("message.plugin.quality_creation.id_tip"));
             player.closeInventory();
         }));
 

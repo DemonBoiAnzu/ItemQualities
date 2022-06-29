@@ -58,7 +58,10 @@ public class ServerListeners implements Listener {
         if (valueId.equals(NEW_QUALITY_ID)) {
             event.setCancelled(true);
             var value = event.getMessage().toLowerCase().replace(" ", "_");
-            var newQuality = new ItemQuality(new NamespacedKey(main, value), "&r%s".formatted(event.getMessage()), 0, 0);
+            var valSplit = value.split(":");
+            var namespaceOwner = (valSplit.length < 2) ? "itemqualities" : valSplit[0];
+            if (valSplit.length > 1) value = valSplit[1];
+            var newQuality = new ItemQuality(new NamespacedKey(namespaceOwner, value), "&r%s".formatted(event.getMessage()), 0, 0);
             if (qualitiesRegistry.contains(newQuality.key)) {
                 sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_already_exists").formatted(newQuality.key));
                 event.getPlayer().getPersistentDataContainer().remove(PLAYER_QUALITY_EDITING_OR_PREVIEWING);
@@ -83,7 +86,10 @@ public class ServerListeners implements Listener {
             var qualityNamespace = new NamespacedKey(rawQualityPreviewingKey[0], rawQualityPreviewingKey[1]);
             var quality = getQualityById(qualityNamespace);
             deleteQuality(quality);
-            var newKey = new NamespacedKey(rawQualityPreviewingKey[0], value);
+            var valSplit = value.split(":");
+            var namespaceOwner = (valSplit.length < 2) ? rawQualityPreviewingKey[0] : valSplit[0];
+            if (valSplit.length > 1) value = valSplit[1];
+            var newKey = new NamespacedKey(namespaceOwner, value);
             if (qualitiesRegistry.contains(newKey)) {
                 sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_already_exists").formatted(newKey));
                 event.getPlayer().getPersistentDataContainer().remove(PLAYER_QUALITY_EDITING_OR_PREVIEWING);

@@ -33,6 +33,7 @@ import static org.bukkit.block.banner.PatternType.*;
 import static org.bukkit.inventory.ItemFlag.HIDE_POTION_EFFECTS;
 import static org.bukkit.persistence.PersistentDataType.STRING;
 
+// TODO: Add translations for GUI Items
 public class IPQualityManager implements InventoryProvider {
     @Override
     public void init(Player player, InventoryContents contents) {
@@ -93,6 +94,7 @@ public class IPQualityManager implements InventoryProvider {
                 e.setCancelled(true);
                 player.getPersistentDataContainer().set(PLAYER_TYPING_VALUE_KEY, STRING, NEW_QUALITY_ID);
                 sendMessageWithPrefix(player, getInstance().getTranslation("message.plugin.quality_creation.enter_value").formatted("ID"));
+                sendMessageWithPrefix(player, getInstance().getTranslation("message.plugin.quality_creation.id_tip"));
                 player.closeInventory();
             }));
         }
