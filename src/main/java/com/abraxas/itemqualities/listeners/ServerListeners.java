@@ -46,7 +46,8 @@ public class ServerListeners implements Listener {
             return;
         }
 
-        if (event.getMessage().equals("cancel")) {
+        if (event.getMessage().equals("cancel") || event.getMessage().equals("Abbrechen") ||
+                event.getMessage().equals("cancelar") || event.getMessage().equals("annuler")) {
             event.setCancelled(true);
             event.getPlayer().getPersistentDataContainer().remove(PLAYER_QUALITY_EDITING_OR_PREVIEWING);
             event.getPlayer().getPersistentDataContainer().remove(PLAYER_TYPING_VALUE_KEY);
@@ -124,6 +125,10 @@ public class ServerListeners implements Listener {
                 value = parseInt(event.getMessage());
             } catch (NumberFormatException e) {
                 sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.unexpected_value_type").formatted("Integer"));
+                return;
+            }
+            if (value < lowestTier) {
+                sendMessageWithPrefix(player, main.getTranslation("message.plugin.quality_creation.unexpected_value_type").formatted("Integer between %s and %s".formatted(lowestTier, highestTier)));
                 return;
             }
             var rawQualityPreviewingKey = player.getPersistentDataContainer().getOrDefault(PLAYER_QUALITY_EDITING_OR_PREVIEWING, STRING, "").split(":");

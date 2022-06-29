@@ -56,4 +56,8 @@ public class QualityAttributeModifier implements Serializable {
             return slotSpecificAmounts.getOrDefault(slot, 0d);
         return amount;
     }
+
+    public String toString() {
+        return "{slot:{%s}, amount: %s}".formatted((ignoredSlots != null) ? ignoredSlots : slot, (slotSpecificAmounts != null) ? slotSpecificAmounts : amount);
+    }
 }

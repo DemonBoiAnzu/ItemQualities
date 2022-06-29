@@ -31,6 +31,7 @@ public class IPQualityPreview implements InventoryProvider {
             player.closeInventory();
             return;
         }
+
         var previewSword = addQualityToItem(new ItemStack(NETHERITE_SWORD), quality);
         var previewPick = addQualityToItem(new ItemStack(NETHERITE_PICKAXE), quality);
         var previewAxe = addQualityToItem(new ItemStack(NETHERITE_AXE), quality);

@@ -33,7 +33,6 @@ import static org.bukkit.block.banner.PatternType.*;
 import static org.bukkit.inventory.ItemFlag.HIDE_POTION_EFFECTS;
 import static org.bukkit.persistence.PersistentDataType.STRING;
 
-// TODO: Finish translations for new messages
 public class IPQualityManager implements InventoryProvider {
     @Override
     public void init(Player player, InventoryContents contents) {

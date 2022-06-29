@@ -42,4 +42,17 @@ public class ItemQuality {
     public static String serialize(ItemQuality item) {
         return getGson().toJson(item, ItemQuality.class);
     }
+
+    public String toString() {
+        return "ItemQuality{id: %s, ".formatted(key.toString()) +
+                "addChance: %s, ".formatted(addToItemChance) +
+                "durMod: %s, ".formatted(itemMaxDurabilityMod) +
+                "noDurLossChance: %s, ".formatted(noDurabilityLossChance) +
+                "extraDurLoss: %s, ".formatted(extraDurabilityLoss) +
+                "extraDurLossChance: %s, ".formatted(extraDurabilityLossChance) +
+                "noDropChance: %s, ".formatted(noDropChance) +
+                "doubleDropChance: %s, ".formatted(doubleDropsChance) +
+                "tier: %s, ".formatted(tier) +
+                "modifiers:[%s]}".formatted(modifiers.toString());
+    }
 }

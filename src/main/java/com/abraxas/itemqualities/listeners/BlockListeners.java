@@ -201,16 +201,30 @@ public class BlockListeners implements Listener {
         }
         registeredQualities.sort(new ItemQualityComparator());
         Collections.reverse(registeredQualities);
-        int highestTier = registeredQualities.stream().findFirst().get().tier;
-        var midTier = highestTier / 2;
-        var lowTier = highestTier / 3;
-        List<ItemQuality> qualities = (getConfig().reforgeTierDependsOnAnvilDamage) ? new ArrayList<>((block.getType().equals(ANVIL)) ?
-                registeredQualities.stream().filter(q -> q.tier >= midTier).toList() :
-                (block.getType().equals(CHIPPED_ANVIL)) ?
-                        registeredQualities.stream().filter(q -> q.tier <= midTier).toList() :
-                        (block.getType().equals(DAMAGED_ANVIL)) ?
-                                registeredQualities.stream().filter(q -> q.tier <= lowTier).toList() :
-                                registeredQualities) : registeredQualities;
+
+        int highestReforgeTier = highestTier;
+        int lowestReforgeTier = lowestTier;
+        if (getConfig().reforgeTierDependsOnAnvilDamage) {
+            switch (block.getType()) {
+                case ANVIL -> {
+                    highestReforgeTier = highestTier;
+                    lowestReforgeTier = midTier;
+                }
+                case CHIPPED_ANVIL -> {
+                    highestReforgeTier = highTier;
+                    lowestReforgeTier = lowTier;
+                }
+                case DAMAGED_ANVIL -> {
+                    highestReforgeTier = midTier;
+                    lowestReforgeTier = lowestTier;
+                }
+            }
+        }
+        int finalLowestReforgeTier = lowestReforgeTier;
+        int finalHighestReforgeTier = highestReforgeTier;
+        List<ItemQuality> qualities = new ArrayList<>(registeredQualities.stream().filter(q -> q.tier >= finalLowestReforgeTier &&
+                q.tier < finalHighestReforgeTier).toList());
+
         qualities.sort(new ItemQualityComparator());
         Collections.shuffle(qualities);
 
@@ -241,9 +255,7 @@ public class BlockListeners implements Listener {
         if (newQuality == null && qualities.size() > 0)
             newQuality = qualities.get(getRandom().nextInt(qualities.size()));
         if (newQuality == null) {
-            sendMessageWithPrefix(player, main.getTranslation("message.reforge.unable_to_reforge").formatted(
-                    (block.getType().equals(CHIPPED_ANVIL)) ? midTier :
-                            (block.getType().equals(DAMAGED_ANVIL)) ? lowTier : highestTier));
+            sendMessageWithPrefix(player, main.getTranslation("message.reforge.unable_to_reforge").formatted(finalLowestReforgeTier, finalHighestReforgeTier));
             return;
         }
         refreshItem(item, newQuality);
