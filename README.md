@@ -25,7 +25,7 @@ You can check it out [here](https://github.com/Steel-Dev/ItemQualities/discussio
 
 ### Download
 
-Pre-Releases will be on here (unstable unfinished builds), and finished stable builds will be [here](https://www.spigotmc.org/resources/item-qualities.102350/)
+Pre-Releases will be on here (unstable unfinished builds), and finished stable builds will be [here](https://www.spigotmc.org/resources/item-qualities.102350/).
 
 ### Issues
 
