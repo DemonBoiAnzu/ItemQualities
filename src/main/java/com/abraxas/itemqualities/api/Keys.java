@@ -9,6 +9,7 @@ public class Keys {
     public static NamespacedKey MAX_ITEM_DURABILITY;
     public static NamespacedKey ITEM_PROJECTILE_DAMAGE;
     public static NamespacedKey ITEM_CRAFTED;
+    public static NamespacedKey ITEM_QUALITY_REMOVED;
     public static NamespacedKey ITEM_CUSTOM_NAME;
     public static NamespacedKey PLAYER_QUALITY_EDITING_OR_PREVIEWING;
     public static NamespacedKey PLAYER_TYPING_VALUE_KEY;
@@ -24,6 +25,7 @@ public class Keys {
         MAX_ITEM_DURABILITY = new NamespacedKey(ItemQualities.getInstance(), "max_durability");
         ITEM_PROJECTILE_DAMAGE = new NamespacedKey(ItemQualities.getInstance(), "projectile_damage");
         ITEM_CRAFTED = new NamespacedKey(ItemQualities.getInstance(), "crafted");
+        ITEM_QUALITY_REMOVED = new NamespacedKey(ItemQualities.getInstance(), "quality_removed");
         ITEM_CUSTOM_NAME = new NamespacedKey(ItemQualities.getInstance(), "custom_name");
         PLAYER_QUALITY_EDITING_OR_PREVIEWING = new NamespacedKey(ItemQualities.getInstance(), "editing_previewing_quality");
         PLAYER_TYPING_VALUE_KEY = new NamespacedKey(ItemQualities.getInstance(), "typing_value");

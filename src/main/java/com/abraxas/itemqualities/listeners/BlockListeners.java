@@ -22,8 +22,7 @@ import java.util.List;
 
 import static com.abraxas.itemqualities.QualitiesManager.*;
 import static com.abraxas.itemqualities.api.DurabilityManager.*;
-import static com.abraxas.itemqualities.api.Keys.ITEM_CRAFTED;
-import static com.abraxas.itemqualities.api.Keys.ITEM_CUSTOM_NAME;
+import static com.abraxas.itemqualities.api.Keys.*;
 import static com.abraxas.itemqualities.utils.Permissions.USE_REFORGE_PERMISSION;
 import static com.abraxas.itemqualities.utils.Utils.*;
 import static org.bukkit.ChatColor.stripColor;
@@ -177,6 +176,7 @@ public class BlockListeners implements Listener {
     public void reforgeItem(PlayerInteractEvent event) {
         var player = event.getPlayer();
         var item = player.getInventory().getItemInMainHand();
+        var itemMeta = item.getItemMeta();
         var block = event.getClickedBlock();
         var action = event.getAction();
         var hand = event.getHand();
@@ -188,6 +188,11 @@ public class BlockListeners implements Listener {
                 !block.getType().equals(CHIPPED_ANVIL) &&
                 !block.getType().equals(DAMAGED_ANVIL)) return;
         if (!getConfig().reforgeStationEnabled) return;
+
+        if (itemMeta.getPersistentDataContainer().has(ITEM_QUALITY_REMOVED, INTEGER)) {
+            itemMeta.getPersistentDataContainer().remove(ITEM_QUALITY_REMOVED);
+            item.setItemMeta(itemMeta);
+        }
 
         List<ItemQuality> registeredQualities = new ArrayList<>() {{
             addAll(Registries.qualitiesRegistry.getRegistry().values());
@@ -241,6 +246,7 @@ public class BlockListeners implements Listener {
             return;
         }
         qualities.remove(getQuality(item));
+        qualities.removeAll(registeredQualities.stream().filter(q -> q.addToItemChance <= 0).toList());
         ItemQuality newQuality = null;
         for (ItemQuality qual : qualities) {
             int chanceBonus = (block.getType().equals(ANVIL)) ? 20 :

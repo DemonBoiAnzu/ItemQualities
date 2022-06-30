@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Random;
 
@@ -155,5 +156,14 @@ public class Utils {
 
     public static Config getConfig() {
         return getInstance().getConfiguration();
+    }
+
+    public static void runTask(Runnable runnable, long delay) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                runnable.run();
+            }
+        }.runTaskLater(getInstance(), delay);
     }
 }

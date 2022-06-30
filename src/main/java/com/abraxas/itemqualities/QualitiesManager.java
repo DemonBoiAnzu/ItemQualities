@@ -411,16 +411,26 @@ public class QualitiesManager {
         if (!itemCanHaveQuality(itemStack) || !itemHasQuality(itemStack)) return itemStack;
 
         var itemsQuality = getQuality(itemStack);
-        return removeQualityFromItem(itemStack, itemsQuality);
+        return removeQualityFromItem(itemStack, itemsQuality, false);
     }
 
-    public static ItemStack removeQualityFromItem(ItemStack itemStack, ItemQuality itemQuality) {
+    public static ItemStack removeQualityFromItem(ItemStack itemStack, boolean removedByCommand) {
+        if (!itemCanHaveQuality(itemStack) || !itemHasQuality(itemStack)) return itemStack;
+
+        var itemsQuality = getQuality(itemStack);
+        return removeQualityFromItem(itemStack, itemsQuality, removedByCommand);
+    }
+
+    public static ItemStack removeQualityFromItem(ItemStack itemStack, ItemQuality itemQuality, boolean removedByCommand) {
         var itemMeta = itemStack.getItemMeta();
-        if (itemMeta == null || !itemCanHaveQuality(itemStack) || !itemHasQuality(itemStack)) return itemStack;
+        if (itemMeta == null || !itemHasQuality(itemStack)) return itemStack;
 
         itemMeta.getPersistentDataContainer().remove(ITEM_QUALITY);
         itemMeta.getPersistentDataContainer().remove(MAX_ITEM_DURABILITY);
         itemMeta.getPersistentDataContainer().remove(ITEM_DURABILITY);
+
+        if (removedByCommand)
+            itemMeta.getPersistentDataContainer().set(ITEM_QUALITY_REMOVED, INTEGER, 1);
 
         var customItemName = itemMeta.getPersistentDataContainer().getOrDefault(ITEM_CUSTOM_NAME, STRING, "");
         String itemName = (!customItemName.isEmpty()) ? customItemName : new TranslatableComponent("item.minecraft.%s".formatted(itemStack.getType().toString().toLowerCase())).toPlainText();
@@ -434,13 +444,36 @@ public class QualitiesManager {
                 itemMeta.removeAttributeModifier(attribute, qualityAttributeModifier.getModifier(itemStack, attribute));
             });
 
+        try {
+            Map<EquipmentSlot, Multimap<Attribute, AttributeModifier>> defAttributes = new HashMap<>();
+            defAttributes.put(HAND, itemStack.getType().getDefaultAttributeModifiers(HAND));
+            defAttributes.put(OFF_HAND, itemStack.getType().getDefaultAttributeModifiers(OFF_HAND));
+            defAttributes.put(HEAD, itemStack.getType().getDefaultAttributeModifiers(HEAD));
+            defAttributes.put(CHEST, itemStack.getType().getDefaultAttributeModifiers(CHEST));
+            defAttributes.put(LEGS, itemStack.getType().getDefaultAttributeModifiers(LEGS));
+            defAttributes.put(FEET, itemStack.getType().getDefaultAttributeModifiers(FEET));
+            defAttributes.forEach((equipmentSlot, attributeAttributeModifierMultimap) -> {
+                attributeAttributeModifierMultimap.forEach((attribute, attributeModifier) -> {
+                    if (itemMeta.getAttributeModifiers() != null &&
+                            !itemMeta.getAttributeModifiers().containsKey(attribute) &&
+                            !itemMeta.getAttributeModifiers().containsValue(attributeModifier))
+                        itemMeta.addAttributeModifier(attribute, attributeModifier);
+                });
+            });
+        } catch (Exception ignored) {
+        }
+
         itemStack.setItemMeta(itemMeta);
 
         return itemStack;
     }
 
     public static boolean itemCanHaveQuality(ItemStack itemStack) {
-        return itemStack.getItemMeta() instanceof Damageable && itemStack.getType().getMaxDurability() > 0 && !getConfig().itemBlacklist.contains(itemStack.getType());
+        return itemStack.getItemMeta() != null &&
+                itemStack.getItemMeta() instanceof Damageable &&
+                itemStack.getType().getMaxDurability() > 0 &&
+                !getConfig().itemBlacklist.contains(itemStack.getType()) &&
+                !itemStack.getItemMeta().getPersistentDataContainer().has(ITEM_QUALITY_REMOVED, INTEGER);
     }
 
     public static ItemQuality getRandomQuality() {

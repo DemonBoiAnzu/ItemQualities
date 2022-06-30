@@ -12,12 +12,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.abraxas.itemqualities.QualitiesManager.*;
 import static com.abraxas.itemqualities.api.DurabilityManager.damageItem;
 import static com.abraxas.itemqualities.api.DurabilityManager.repairItem;
+import static com.abraxas.itemqualities.api.Keys.ITEM_QUALITY_REMOVED;
 import static com.abraxas.itemqualities.api.Registries.qualitiesRegistry;
 import static com.abraxas.itemqualities.inventories.Inventories.QUALITY_MANAGER_INVENTORY;
 import static com.abraxas.itemqualities.utils.Permissions.*;
 import static com.abraxas.itemqualities.utils.UpdateChecker.sendNewVersionNotif;
 import static com.abraxas.itemqualities.utils.Utils.*;
 import static org.bukkit.Material.AIR;
+import static org.bukkit.persistence.PersistentDataType.INTEGER;
 
 public class Commands {
     static ItemQualities main = ItemQualities.getInstance();
@@ -81,13 +83,17 @@ public class Commands {
                         if (qualArgString != "random" && qualArg.length > 1)
                             quality = getQualityById(qualArg[1]);
 
-                        if (!itemCanHaveQuality(item)) {
+                        var meta = item.getItemMeta();
+
+                        if (!itemCanHaveQuality(item) && !meta.getPersistentDataContainer().has(ITEM_QUALITY_REMOVED, INTEGER)) {
                             sendMessageWithPrefix(player, main.getTranslation("message.commands.item_cant_have_quality"));
                             return;
                         }
-                        if (itemHasQuality(item)) removeQualityFromItem(item);
-
-                        addQualityToItem(item, quality);
+                        if (meta.getPersistentDataContainer().has(ITEM_QUALITY_REMOVED, INTEGER)) {
+                            meta.getPersistentDataContainer().remove(ITEM_QUALITY_REMOVED);
+                            item.setItemMeta(meta);
+                        }
+                        refreshItem(item, quality);
                         damageItem(player, item, 0);
                         sendMessageWithPrefix(player, main.getTranslation("message.commands.items_quality_set").formatted(quality.display));
                     }));
@@ -99,19 +105,15 @@ public class Commands {
                             sendMessageWithPrefix(player, main.getTranslation("message.commands.must_hold_item"));
                             return;
                         }
-                        if (!itemCanHaveQuality(item)) {
-                            sendMessageWithPrefix(player, main.getTranslation("message.commands.item_cant_remove_quality"));
-                            return;
-                        }
                         if (!itemHasQuality(item)) {
                             sendMessageWithPrefix(player, main.getTranslation("message.commands.item_has_no_quality"));
                             return;
                         }
 
                         var itemsQuality = getQuality(item);
-
-                        removeQualityFromItem(item);
+                        removeQualityFromItem(item, true);
                         damageItem(player, item, 0);
+
                         sendMessageWithPrefix(player, main.getTranslation("message.commands.quality_removed").formatted(itemsQuality.display));
                     }));
             add(new CommandAPICommand("managequalities")
